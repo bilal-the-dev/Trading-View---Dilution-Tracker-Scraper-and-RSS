@@ -1,0 +1,6 @@
+.env
+node_modules
+ticker.png
+ticker-news.png
+dilution.js
+dilution.css
