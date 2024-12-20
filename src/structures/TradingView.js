@@ -9,7 +9,7 @@ const timezone = require("dayjs/plugin/timezone");
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.tz.setDefault("Canada/Eastern");
-let retries = 0;
+// let retries = 0;
 
 const {
   OPEN_MARKET_CONFIG,
@@ -25,7 +25,7 @@ const {
 } = process.env;
 
 class TradingView {
-  #cookie;
+  #cookie = ` sessionid=${TV_SESSION_ID}; sessionid_sign=${TV_SESSION_ID_SIGN_IN}`;
   #username;
   #started;
   #tickers = new Set();
@@ -65,7 +65,9 @@ class TradingView {
         contentType: "text/plain;charset=UTF-8",
         body,
         method: "POST",
-        cookie: `cookiePrivacyPreferenceBannerProduction=notApplicable; cookiesSettings={"analytics":true,"advertising":true}; sessionid=${TV_SESSION_ID}; sessionid_sign=${TV_SESSION_ID_SIGN_IN}`,
+        cookie: `cookiePrivacyPreferenceBannerProduction=notApplicable; cookiesSettings={"analytics":true,"advertising":true};${
+          this.#cookie
+        }`,
       })
     );
 
@@ -144,9 +146,18 @@ class TradingView {
     // await this.login();
 
     this.refreshTickerCache();
+    this.keepCheckingCookie();
     while (true) {
       await this.checkForNewTickers().catch(console.error);
     }
+  }
+
+  async keepCheckingCookie() {
+    cron.schedule("0 0 * * *", async () => {
+      console.log("Checking if cookie is valid!");
+
+      await this.isLoggedIn().catch(console.error);
+    });
   }
 
   async login() {
@@ -205,34 +216,42 @@ class TradingView {
 
   async isLoggedIn() {
     const res = await fetch(
-      `${TV_URL}/notifications-settings/values/?widget_type=user"`,
-      {
+      `${TV_URL}/notifications-settings/values/?widget_type=user`,
+      this.getHeaders({
         cookie: `cookiePrivacyPreferenceBannerProduction=notApplicable; cookiesSettings={"analytics":true,"advertising":true};${
           this.#cookie
         }`,
         referrer: ``,
         contentType: "application/json",
         mode: "cors",
-      }
+      })
     );
 
-    if (res.status === 403) {
-      console.log("Cookie expired: Logging in again");
-      console.log(res);
+    console.log(res);
+    const data = await res.json();
+    console.log(data);
 
-      if (retries >= 3)
-        throw new Error("Login retires finished, not trying anymore!");
+    if (res.ok) return;
 
-      retries++;
-      await this.login();
-    }
+    const desc = `\`\`\`json\n${JSON.stringify(data)}\`\`\``;
 
-    if (!res.ok) {
-      console.log(res);
-      console.log(await res.json());
+    // if (res.status === 403) {
+    console.log("Cookie expired!");
+    await this.client.sendTickerMessage("test", desc, TRADING_VIEW_CHANNEL_ID);
 
-      throw new Error(res.statusText);
-    }
+    // if (retries >= 3)
+    //   throw new Error("Login retires finished, not trying anymore!");
+
+    // retries++;
+    // await this.login();
+    // }
+
+    // if (!res.ok) {
+    //   console.log(res);
+    //   console.log(await res.json());
+
+    //   throw new Error(res.statusText);
+    // }
   }
 
   refreshTickerCache() {

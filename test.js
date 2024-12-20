@@ -243,36 +243,36 @@
 // // })
 // //   .then((r) => r.text())
 // //   .then(console.log);
-fetch(
-  "https://scanner.tradingview.com/america/scan?label-product=screener-stock",
-  {
-    headers: {
-      accept: "application/json",
-      "accept-language": "en-US,en;q=0.9",
-      "cache-control": "no-cache",
-      "content-type": "text/plain;charset=UTF-8",
-      pragma: "no-cache",
-      priority: "u=1, i",
-      "sec-ch-ua":
-        '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
-      "sec-ch-ua-mobile": "?0",
-      "sec-ch-ua-platform": '"Windows"',
-      "sec-fetch-dest": "empty",
-      "sec-fetch-mode": "cors",
+// fetch(
+//   "https://scanner.tradingview.com/america/scan?label-product=screener-stock",
+//   {
+//     headers: {
+//       accept: "application/json",
+//       "accept-language": "en-US,en;q=0.9",
+//       "cache-control": "no-cache",
+//       "content-type": "text/plain;charset=UTF-8",
+//       pragma: "no-cache",
+//       priority: "u=1, i",
+//       "sec-ch-ua":
+//         '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+//       "sec-ch-ua-mobile": "?0",
+//       "sec-ch-ua-platform": '"Windows"',
+//       "sec-fetch-dest": "empty",
+//       "sec-fetch-mode": "cors",
 
-      "sec-fetch-site": "same-site",
-      // cookie:
-      //   'cookiePrivacyPreferenceBannerProduction=notApplicable; cookiesSettings={"analytics":true,"advertising":true}; _ga=GA1.1.1711260882.1731691356; tv_ecuid=e1395b63-4159-4d1e-841d-c0e1cb57538b; device_t=UU5aZEJROjI.3qXibDts1JwompKeS73Hts1XJBddBKK-Zi6xOkeAZcg; _sp_ses.cf1a=*; sessionid_sign=v3:t13U+y+wGV4WXMG73u+V7VmmLLbGnnI2CFh8oEig2cM=; cachec=undefined; etg=undefined; _ga_YVVRYGL0E0=GS1.1.1734609242.8.1.1734610239.60.0.0; _sp_id.cf1a=14b53834-768f-4d66-9bdf-4efe376fcc4d.1731691356.7.1734610714.1734555222.a43e6964-0c0a-4c5e-aece-e63fbb4ea27e.6b139b01-f762-4fe8-96a2-cf47ad5e5542.d736b735-46b6-4f18-a7cb-00d01dfc448d.1734609242299.23',
-      //   "sessionid=or0ltxf4woekzw0waujb60ont75q4k0n; sessionid_sign=sessionid=or0ltxf4woekzw0waujb60ont75q4k0n;",
-      Referer: "https://www.tradingview.com/",
-      "Referrer-Policy": "origin-when-cross-origin",
-    },
-    body: '{"columns":["name","description","logoid","update_mode","type","typespecs","close","pricescale","minmov","fractional","minmove2","currency","change","volume","relative_volume_10d_calc","market_cap_basic","fundamental_currency_code","price_earnings_ttm","earnings_per_share_diluted_ttm","earnings_per_share_diluted_yoy_growth_ttm","dividends_yield_current","sector.tr","market","sector","recommendation_mark","exchange"],"filter":[{"left":"market_cap_basic","operation":"in_range","right":[1,500000000]},{"left":"premarket_change","operation":"greater","right":15},{"left":"premarket_high","operation":"in_range","right":[0.8,20]},{"left":"premarket_volume","operation":"greater","right":15000},{"left":"exchange","operation":"in_range","right":["AMEX","NASDAQ","NYSE"]}],"ignore_unknown_fields":false,"options":{"lang":"en"},"range":[0,100],"sort":{"sortBy":"market_cap_basic","sortOrder":"desc"},"symbols":{},"markets":["america"],"filter2":{"operator":"and","operands":[{"operation":{"operator":"or","operands":[{"operation":{"operator":"and","operands":[{"expression":{"left":"type","operation":"equal","right":"stock"}},{"expression":{"left":"typespecs","operation":"has","right":["common"]}}]}},{"operation":{"operator":"and","operands":[{"expression":{"left":"type","operation":"equal","right":"stock"}},{"expression":{"left":"typespecs","operation":"has","right":["preferred"]}}]}},{"operation":{"operator":"and","operands":[{"expression":{"left":"type","operation":"equal","right":"dr"}}]}},{"operation":{"operator":"and","operands":[{"expression":{"left":"type","operation":"equal","right":"fund"}},{"expression":{"left":"typespecs","operation":"has_none_of","right":["etf"]}}]}}]}}]}}',
-    method: "POST",
-  }
-)
-  .then((r) => r.json())
-  .then(console.log);
+//       "sec-fetch-site": "same-site",
+//       cookie:
+//         // 'cookiePrivacyPreferenceBannerProduction=notApplicable; cookiesSettings={"analytics":true,"advertising":true}; _ga=GA1.1.1711260882.1731691356; tv_ecuid=e1395b63-4159-4d1e-841d-c0e1cb57538b; device_t=UU5aZEJROjI.3qXibDts1JwompKeS73Hts1XJBddBKK-Zi6xOkeAZcg; _sp_ses.cf1a=*; sessionid_sign=v3:t13U+y+wGV4WXMG73u+V7VmmLLbGnnI2CFh8oEig2cM=; cachec=undefined; etg=undefined; _ga_YVVRYGL0E0=GS1.1.1734609242.8.1.1734610239.60.0.0; _sp_id.cf1a=14b53834-768f-4d66-9bdf-4efe376fcc4d.1731691356.7.1734610714.1734555222.a43e6964-0c0a-4c5e-aece-e63fbb4ea27e.6b139b01-f762-4fe8-96a2-cf47ad5e5542.d736b735-46b6-4f18-a7cb-00d01dfc448d.1734609242299.23',
+//         "sessionid=bt6nc4n9yfr9gjvfm896nrfwyj1bel0c;",
+//       Referer: "https://www.tradingview.com/",
+//       "Referrer-Policy": "origin-when-cross-origin",
+//     },
+//     body: '{"columns":["name","description","logoid","update_mode","type","typespecs","close","pricescale","minmov","fractional","minmove2","currency","change","volume","relative_volume_10d_calc","market_cap_basic","fundamental_currency_code","price_earnings_ttm","earnings_per_share_diluted_ttm","earnings_per_share_diluted_yoy_growth_ttm","dividends_yield_current","sector.tr","market","sector","recommendation_mark","exchange"],"filter":[{"left":"close","operation":"in_range","right":[0.8,20]},{"left":"change","operation":"greater","right":15},{"left":"market_cap_basic","operation":"in_range","right":[1,500000000]},{"left":"volume","operation":"greater","right":150000},{"left":"exchange","operation":"in_range","right":["AMEX","NASDAQ","NYSE"]}],"ignore_unknown_fields":false,"options":{"lang":"en"},"range":[0,100],"sort":{"sortBy":"change","sortOrder":"desc"},"symbols":{},"markets":["america"],"filter2":{"operator":"and","operands":[{"operation":{"operator":"or","operands":[{"operation":{"operator":"and","operands":[{"expression":{"left":"type","operation":"equal","right":"stock"}},{"expression":{"left":"typespecs","operation":"has","right":["common"]}}]}},{"operation":{"operator":"and","operands":[{"expression":{"left":"type","operation":"equal","right":"stock"}},{"expression":{"left":"typespecs","operation":"has","right":["preferred"]}}]}},{"operation":{"operator":"and","operands":[{"expression":{"left":"type","operation":"equal","right":"dr"}}]}},{"operation":{"operator":"and","operands":[{"expression":{"left":"type","operation":"equal","right":"fund"}},{"expression":{"left":"typespecs","operation":"has_none_of","right":["etf"]}}]}}]}}]}}',
+//     method: "POST",
+//   }
+// )
+//   .then((r) => r.json())
+//   .then(console.log);
 
 // async function sA(params) {
 //   fetch("https://www.tradingview.com/accounts/signin/", {
@@ -304,3 +304,37 @@ fetch(
 // }
 
 // sA();
+
+fetch(
+  `https://www.tradingview.com/notifications-settings/values/?widget_type=user`,
+  {
+    headers: {
+      accept: "application/json",
+      "accept-language": "en-US,en;q=0.9",
+      "cache-control": "no-cache",
+      "content-type": "application/json",
+      pragma: "no-cache",
+      priority: "u=1, i",
+      "sec-ch-ua":
+        '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-platform": '"Windows"',
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+
+      "sec-fetch-site": "same-site",
+      cookie:
+        // 'cookiePrivacyPreferenceBannerProduction=notApplicable; cookiesSettings={"analytics":true,"advertising":true}; _ga=GA1.1.1711260882.1731691356; tv_ecuid=e1395b63-4159-4d1e-841d-c0e1cb57538b; device_t=UU5aZEJROjI.3qXibDts1JwompKeS73Hts1XJBddBKK-Zi6xOkeAZcg; _sp_ses.cf1a=*; sessionid_sign=v3:t13U+y+wGV4WXMG73u+V7VmmLLbGnnI2CFh8oEig2cM=; cachec=undefined; etg=undefined; _ga_YVVRYGL0E0=GS1.1.1734609242.8.1.1734610239.60.0.0; _sp_id.cf1a=14b53834-768f-4d66-9bdf-4efe376fcc4d.1731691356.7.1734610714.1734555222.a43e6964-0c0a-4c5e-aece-e63fbb4ea27e.6b139b01-f762-4fe8-96a2-cf47ad5e5542.d736b735-46b6-4f18-a7cb-00d01dfc448d.1734609242299.23',
+        "sessionid=bt6nc4n9yfr9gjvfm896nrfwyj1bl0c;",
+      Referer: "https://www.tradingview.com/",
+    },
+    // body: '{"columns":["name","description","logoid","update_mode","type","typespecs","close","pricescale","minmov","fractional","minmove2","currency","change","volume","relative_volume_10d_calc","market_cap_basic","fundamental_currency_code","price_earnings_ttm","earnings_per_share_diluted_ttm","earnings_per_share_diluted_yoy_growth_ttm","dividends_yield_current","sector.tr","market","sector","recommendation_mark","exchange"],"filter":[{"left":"close","operation":"in_range","right":[0.8,20]},{"left":"change","operation":"greater","right":15},{"left":"market_cap_basic","operation":"in_range","right":[1,500000000]},{"left":"volume","operation":"greater","right":150000},{"left":"exchange","operation":"in_range","right":["AMEX","NASDAQ","NYSE"]}],"ignore_unknown_fields":false,"options":{"lang":"en"},"range":[0,100],"sort":{"sortBy":"change","sortOrder":"desc"},"symbols":{},"markets":["america"],"filter2":{"operator":"and","operands":[{"operation":{"operator":"or","operands":[{"operation":{"operator":"and","operands":[{"expression":{"left":"type","operation":"equal","right":"stock"}},{"expression":{"left":"typespecs","operation":"has","right":["common"]}}]}},{"operation":{"operator":"and","operands":[{"expression":{"left":"type","operation":"equal","right":"stock"}},{"expression":{"left":"typespecs","operation":"has","right":["preferred"]}}]}},{"operation":{"operator":"and","operands":[{"expression":{"left":"type","operation":"equal","right":"dr"}}]}},{"operation":{"operator":"and","operands":[{"expression":{"left":"type","operation":"equal","right":"fund"}},{"expression":{"left":"typespecs","operation":"has_none_of","right":["etf"]}}]}}]}}]}}',
+    // method: "POST",
+  }
+)
+  .then((r) => {
+    console.log(r);
+
+    return r.json();
+  })
+  .then(console.log);
