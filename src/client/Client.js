@@ -24,6 +24,7 @@ class ExtendedClient extends Client {
     this.dilutionTracker = new DilutionTracker({
       // headless: false,
       // devtools: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     this.tradingView = new TradingView(this, {
       afterMarketTimeout: 1000 * 20,
