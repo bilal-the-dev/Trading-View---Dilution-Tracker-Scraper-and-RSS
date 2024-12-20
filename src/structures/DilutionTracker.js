@@ -1,10 +1,10 @@
-const puppeteer = require("puppeteer");
+// const puppeteer = require("puppeteer");
 const cron = require("node-cron");
 
-// const puppeteer = require("puppeteer-extra");
+const puppeteer = require("puppeteer-extra");
 const fs = require("fs/promises");
-// const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-// puppeteer.use(StealthPlugin());
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+puppeteer.use(StealthPlugin());
 
 const JS_FILE = "bundle.b5bf677a06e2a4077dde.js";
 const CSS_FILE = "css.main.99943a6280f5c20dc93c.css";
