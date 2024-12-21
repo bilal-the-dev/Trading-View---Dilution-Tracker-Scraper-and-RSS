@@ -6,6 +6,7 @@ const { HALT_RSS_URL, HALT_FEED_CHANNEL_ID, SHOULD_RUN_HALT } = process.env;
 class HaltManager {
   parser = new XMLParser();
   #items = [];
+  #haltTimes = {};
   constructor({ filters, client }) {
     this.client = client;
     this.filters = filters;
@@ -76,9 +77,19 @@ class HaltManager {
   }
 
   async sendMessage(item) {
+    const date = item["ndaq:HaltDate"];
+    const code = item["ndaq:ReasonCode"];
+
+    if (!this.#haltTimes[date]) this.#haltTimes[date] = {};
+
+    if (!this.#haltTimes[date][code]) this.#haltTimes[date][code] = 0;
+
+    this.#haltTimes[date][code]++;
+    const noOfHalts = this.#haltTimes[date][code];
+
     await this.client.sendTickerMessage(
       item[["ndaq:IssueSymbol"]],
-      `**Issue Symbol**: ${item["ndaq:IssueSymbol"]}\n**Halt Date**: ${item["ndaq:HaltDate"]}\n**Halt Time**: ${item["ndaq:HaltTime"]}\n**Market**: ${item["ndaq:Market"]}\n**Reason Code**: ${item["ndaq:ReasonCode"]}`,
+      `*Issue Symbol**: ${item["ndaq:IssueSymbol"]}\n**Halt Date**: ${date}\n**Halt Time**: ${item["ndaq:HaltTime"]}\n***Market**: ${item["ndaq:Market"]}\n**Reason Code**: ${code} #${noOfHalts}`,
       HALT_FEED_CHANNEL_ID
     );
   }

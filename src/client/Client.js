@@ -24,6 +24,9 @@ class ExtendedClient extends Client {
     this.dilutionTracker = new DilutionTracker({
       // headless: false,
       // devtools: true,
+      ...(process.platform === "linux" && {
+        executablePath: "/usr/bin/chromium-browser",
+      }),
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     this.tradingView = new TradingView(this, {

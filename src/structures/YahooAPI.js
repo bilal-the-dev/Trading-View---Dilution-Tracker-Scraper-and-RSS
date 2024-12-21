@@ -16,7 +16,9 @@ class YahooAPI {
         "incomeStatementHistoryQuarterly",
       ],
     };
-    return yahooFinance.quoteSummary(this.ticker, queryOptions);
+    return yahooFinance.quoteSummary(this.ticker, queryOptions, {
+      validateResult: false,
+    });
   }
 }
 
