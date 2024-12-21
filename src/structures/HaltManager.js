@@ -79,17 +79,18 @@ class HaltManager {
   async sendMessage(item) {
     const date = item["ndaq:HaltDate"];
     const code = item["ndaq:ReasonCode"];
+    const symbol = item["ndaq:IssueSymbol"];
 
     if (!this.#haltTimes[date]) this.#haltTimes[date] = {};
 
-    if (!this.#haltTimes[date][code]) this.#haltTimes[date][code] = 0;
+    if (!this.#haltTimes[date][symbol]) this.#haltTimes[date][symbol] = 0;
 
-    this.#haltTimes[date][code]++;
-    const noOfHalts = this.#haltTimes[date][code];
+    this.#haltTimes[date][symbol]++;
+    const noOfHalts = this.#haltTimes[date][symbol];
 
     await this.client.sendTickerMessage(
       item[["ndaq:IssueSymbol"]],
-      `*Issue Symbol**: ${item["ndaq:IssueSymbol"]}\n**Halt Date**: ${date}\n**Halt Time**: ${item["ndaq:HaltTime"]}\n***Market**: ${item["ndaq:Market"]}\n**Reason Code**: ${code} #${noOfHalts}`,
+      `*Issue Symbol**: ${symbol} #${noOfHalts}\n**Halt Date**: ${date}\n**Halt Time**: ${item["ndaq:HaltTime"]}\n***Market**: ${item["ndaq:Market"]}\n**Reason Code**: ${code}`,
       HALT_FEED_CHANNEL_ID
     );
   }
