@@ -33,12 +33,15 @@ class YahooAPI {
     const res = await fetch(url);
     const data = await res.json();
 
-    const result = data?.timeseries?.result?.[0]?.["quarterlyNetIncome"];
+    const result = data?.timeseries?.result;
 
-    if (!res.ok || !result)
+    if (!res.ok || !result) {
+      console.log(res);
+      console.log(data.timeseries?.result);
       throw new Error("Something went wrong while fetching quarterly income");
+    }
 
-    return result;
+    return result?.[0]?.quarterlyNetIncome || [];
   }
 }
 

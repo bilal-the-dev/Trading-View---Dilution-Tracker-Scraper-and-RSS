@@ -45,9 +45,14 @@ exports.parseTickerData = (data) => {
       settlementDate,
     } = dilutionData.shortInterestData;
 
-    shortInterest = `${shortInterestAsPercentOfFloat}% ${
-      Number(shortInterestAsPercentOfFloat) > 0.1 ? " 🟡" : " 🟢"
-    } as of ${settlementDate} settlement date and published on ${releaseDate}\n-# Last Updated: ${releasedDaysAgo} days ago\n\n`;
+    let emoji;
+
+    const numberedInterest = Number(shortInterestAsPercentOfFloat);
+
+    if (numberedInterest < 5) emoji = "🟢";
+    if (numberedInterest > 10) emoji = "🔴";
+    if (numberedInterest >= 5 && numberedInterest <= 10) emoji = "🟡";
+    shortInterest = `${shortInterestAsPercentOfFloat}% ${emoji} as of ${settlementDate} settlement date and published on ${releaseDate}\n-# Last Updated: ${releasedDaysAgo} days ago\n\n`;
   }
 
   const text = `# ${ticker}\n${getYahooString(
@@ -173,15 +178,16 @@ function parseYahooData(yahooData) {
       }`
     : "N/A";
 
-  const quaterlyIncome = quarterlyIncome
-    .reverse()
-    .reduce(
-      (acc, cur) =>
-        `${acc}Date: ${cur.asOfDate}: ${cur.reportedValue.fmt}${
-          cur.reportedValue.raw > 0 ? " 🔴 'Must be negative income'" : " 🟢"
-        }\n`,
-      ""
-    );
+  const quaterlyIncome =
+    quarterlyIncome
+      .reverse()
+      .reduce(
+        (acc, cur) =>
+          `${acc}Date: ${cur.asOfDate}: ${cur.reportedValue.fmt}${
+            cur.reportedValue.raw > 0 ? " 🔴 'Must be negative income'" : " 🟢"
+          }\n`,
+        ""
+      ) || "N/A";
 
   return {
     ...financialDataPrettified,
