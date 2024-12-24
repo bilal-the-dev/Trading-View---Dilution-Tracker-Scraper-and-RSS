@@ -90,7 +90,7 @@ class HaltManager {
 
     await this.client.sendTickerMessage(
       item[["ndaq:IssueSymbol"]],
-      `*Issue Symbol**: #${noOfHalts} ${symbol}\n**Halt Date**: ${date}\n**Halt Time**: ${item["ndaq:HaltTime"]}\n***Market**: ${item["ndaq:Market"]}\n**Reason Code**: ${code}`,
+      `*Issue Symbol**: #${noOfHalts} ${symbol}\n**Halt Date**: ${date}\n**Halt Time**: ${item["ndaq:HaltTime"]}\n**Market**: ${item["ndaq:Market"]}\n**Reason Code**: ${code}***`,
       HALT_FEED_CHANNEL_ID
     );
   }

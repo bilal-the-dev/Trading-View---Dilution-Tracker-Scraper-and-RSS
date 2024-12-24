@@ -108,7 +108,7 @@ function parseYahooData(yahooData) {
   const {
     assetProfile,
     price,
-    incomeStatementHistoryQuarterly: { incomeStatementHistory },
+    quarterlyIncome,
     defaultKeyStatistics,
     financialData,
   } = yahooData;
@@ -153,7 +153,7 @@ function parseYahooData(yahooData) {
     ? `${roundOffAndConverToPercent(
         defaultKeyStatistics.heldPercentInstitutions
       )} ${
-        defaultKeyStatistics.heldPercentInsiders > 0.51
+        defaultKeyStatistics.heldPercentInstitutions > 0.51
           ? "🔴 'Must be below 50%'"
           : " 🟢"
       }`
@@ -173,13 +173,15 @@ function parseYahooData(yahooData) {
       }`
     : "N/A";
 
-  const quaterlyIncome = incomeStatementHistory.reduce(
-    (acc, cur) =>
-      `${acc}Date: ${cur.endDate.toISOString()}: ${addCommasToNumber(
-        cur.netIncome
-      )}${cur.netIncome > 0 ? " 🔴 'Must be negative income'" : " 🟢"}\n`,
-    ""
-  );
+  const quaterlyIncome = quarterlyIncome
+    .reverse()
+    .reduce(
+      (acc, cur) =>
+        `${acc}Date: ${cur.asOfDate}: ${cur.reportedValue.fmt}${
+          cur.reportedValue.raw > 0 ? " 🔴 'Must be negative income'" : " 🟢"
+        }\n`,
+      ""
+    );
 
   return {
     ...financialDataPrettified,

@@ -1,107 +1,107 @@
 const keys = [
-  "TaxEffectOfUnusualItems",
-  "TaxRateForCalcs",
-  "NormalizedEBITDA",
-  "NormalizedDilutedEPS",
-  "NormalizedBasicEPS",
-  "TotalUnusualItems",
-  "TotalUnusualItemsExcludingGoodwill",
-  "NetIncomeFromContinuingOperationNetMinorityInterest",
-  "ReconciledDepreciation",
-  "ReconciledCostOfRevenue",
-  "EBITDA",
-  "EBIT",
-  "NetInterestIncome",
-  "InterestExpense",
-  "InterestIncome",
-  "ContinuingAndDiscontinuedDilutedEPS",
-  "ContinuingAndDiscontinuedBasicEPS",
-  "NormalizedIncome",
-  "NetIncomeFromContinuingAndDiscontinuedOperation",
-  "TotalExpenses",
-  "RentExpenseSupplemental",
-  "ReportedNormalizedDilutedEPS",
-  "ReportedNormalizedBasicEPS",
-  "TotalOperatingIncomeAsReported",
-  "DividendPerShare",
-  "DilutedAverageShares",
-  "BasicAverageShares",
-  "DilutedEPS",
-  "DilutedEPSOtherGainsLosses",
-  "TaxLossCarryforwardDilutedEPS",
-  "DilutedAccountingChange",
-  "DilutedExtraordinary",
-  "DilutedDiscontinuousOperations",
-  "DilutedContinuousOperations",
-  "BasicEPS",
-  "BasicEPSOtherGainsLosses",
-  "TaxLossCarryforwardBasicEPS",
-  "BasicAccountingChange",
-  "BasicExtraordinary",
-  "BasicDiscontinuousOperations",
-  "BasicContinuousOperations",
-  "DilutedNIAvailtoComStockholders",
-  "AverageDilutionEarnings",
-  "NetIncomeCommonStockholders",
-  "OtherunderPreferredStockDividend",
-  "PreferredStockDividends",
+  // "TaxEffectOfUnusualItems",
+  // "TaxRateForCalcs",
+  // "NormalizedEBITDA",
+  // "NormalizedDilutedEPS",
+  // "NormalizedBasicEPS",
+  // "TotalUnusualItems",
+  // "TotalUnusualItemsExcludingGoodwill",
+  // "NetIncomeFromContinuingOperationNetMinorityInterest",
+  // "ReconciledDepreciation",
+  // "ReconciledCostOfRevenue",
+  // "EBITDA",
+  // "EBIT",
+  // "NetInterestIncome",
+  // "InterestExpense",
+  // "InterestIncome",
+  // "ContinuingAndDiscontinuedDilutedEPS",
+  // "ContinuingAndDiscontinuedBasicEPS",
+  // "NormalizedIncome",
+  // "NetIncomeFromContinuingAndDiscontinuedOperation",
+  // "TotalExpenses",
+  // "RentExpenseSupplemental",
+  // "ReportedNormalizedDilutedEPS",
+  // "ReportedNormalizedBasicEPS",
+  // "TotalOperatingIncomeAsReported",
+  // "DividendPerShare",
+  // "DilutedAverageShares",
+  // "BasicAverageShares",
+  // "DilutedEPS",
+  // "DilutedEPSOtherGainsLosses",
+  // "TaxLossCarryforwardDilutedEPS",
+  // "DilutedAccountingChange",
+  // "DilutedExtraordinary",
+  // "DilutedDiscontinuousOperations",
+  // "DilutedContinuousOperations",
+  // "BasicEPS",
+  // "BasicEPSOtherGainsLosses",
+  // "TaxLossCarryforwardBasicEPS",
+  // "BasicAccountingChange",
+  // "BasicExtraordinary",
+  // "BasicDiscontinuousOperations",
+  // "BasicContinuousOperations",
+  // "DilutedNIAvailtoComStockholders",
+  // "AverageDilutionEarnings",
+  // "NetIncomeCommonStockholders",
+  // "OtherunderPreferredStockDividend",
+  // "PreferredStockDividends",
   "NetIncome",
-  "MinorityInterests",
-  "NetIncomeIncludingNoncontrollingInterests",
-  "NetIncomeFromTaxLossCarryforward",
-  "NetIncomeExtraordinary",
-  "NetIncomeDiscontinuousOperations",
-  "NetIncomeContinuousOperations",
-  "EarningsFromEquityInterestNetOfTax",
-  "TaxProvision",
-  "PretaxIncome",
-  "OtherIncomeExpense",
-  "OtherNonOperatingIncomeExpenses",
-  "SpecialIncomeCharges",
-  "GainOnSaleOfPPE",
-  "GainOnSaleOfBusiness",
-  "OtherSpecialCharges",
-  "WriteOff",
-  "ImpairmentOfCapitalAssets",
-  "RestructuringAndMergernAcquisition",
-  "SecuritiesAmortization",
-  "EarningsFromEquityInterest",
-  "GainOnSaleOfSecurity",
-  "NetNonOperatingInterestIncomeExpense",
-  "TotalOtherFinanceCost",
-  "InterestExpenseNonOperating",
-  "InterestIncomeNonOperating",
-  "OperatingIncome",
-  "OperatingExpense",
-  "OtherOperatingExpenses",
-  "OtherTaxes",
-  "ProvisionForDoubtfulAccounts",
-  "DepreciationAmortizationDepletionIncomeStatement",
-  "DepletionIncomeStatement",
-  "DepreciationAndAmortizationInIncomeStatement",
-  "Amortization",
-  "AmortizationOfIntangiblesIncomeStatement",
-  "DepreciationIncomeStatement",
-  "ResearchAndDevelopment",
-  "SellingGeneralAndAdministration",
-  "SellingAndMarketingExpense",
-  "GeneralAndAdministrativeExpense",
-  "OtherGandA",
-  "InsuranceAndClaims",
-  "RentAndLandingFees",
-  "SalariesAndWages",
-  "GrossProfit",
-  "CostOfRevenue",
-  "TotalRevenue",
-  "ExciseTaxes",
-  "OperatingRevenue",
-  "LossAdjustmentExpense",
-  "NetPolicyholderBenefitsAndClaims",
-  "PolicyholderBenefitsGross",
-  "PolicyholderBenefitsCeded",
-  "OccupancyAndEquipment",
-  "ProfessionalExpenseAndContractServicesExpense",
-  "OtherNonInterestExpense",
+  // "MinorityInterests",
+  // "NetIncomeIncludingNoncontrollingInterests",
+  // "NetIncomeFromTaxLossCarryforward",
+  // "NetIncomeExtraordinary",
+  // "NetIncomeDiscontinuousOperations",
+  // "NetIncomeContinuousOperations",
+  // "EarningsFromEquityInterestNetOfTax",
+  // "TaxProvision",
+  // "PretaxIncome",
+  // "OtherIncomeExpense",
+  // "OtherNonOperatingIncomeExpenses",
+  // "SpecialIncomeCharges",
+  // "GainOnSaleOfPPE",
+  // "GainOnSaleOfBusiness",
+  // "OtherSpecialCharges",
+  // "WriteOff",
+  // "ImpairmentOfCapitalAssets",
+  // "RestructuringAndMergernAcquisition",
+  // "SecuritiesAmortization",
+  // "EarningsFromEquityInterest",
+  // "GainOnSaleOfSecurity",
+  // "NetNonOperatingInterestIncomeExpense",
+  // "TotalOtherFinanceCost",
+  // "InterestExpenseNonOperating",
+  // "InterestIncomeNonOperating",
+  // "OperatingIncome",
+  // "OperatingExpense",
+  // "OtherOperatingExpenses",
+  // "OtherTaxes",
+  // "ProvisionForDoubtfulAccounts",
+  // "DepreciationAmortizationDepletionIncomeStatement",
+  // "DepletionIncomeStatement",
+  // "DepreciationAndAmortizationInIncomeStatement",
+  // "Amortization",
+  // "AmortizationOfIntangiblesIncomeStatement",
+  // "DepreciationIncomeStatement",
+  // "ResearchAndDevelopment",
+  // "SellingGeneralAndAdministration",
+  // "SellingAndMarketingExpense",
+  // "GeneralAndAdministrativeExpense",
+  // "OtherGandA",
+  // "InsuranceAndClaims",
+  // "RentAndLandingFees",
+  // "SalariesAndWages",
+  // "GrossProfit",
+  // "CostOfRevenue",
+  // "TotalRevenue",
+  // "ExciseTaxes",
+  // "OperatingRevenue",
+  // "LossAdjustmentExpense",
+  // "NetPolicyholderBenefitsAndClaims",
+  // "PolicyholderBenefitsGross",
+  // "PolicyholderBenefitsCeded",
+  // "OccupancyAndEquipment",
+  // "ProfessionalExpenseAndContractServicesExpense",
+  // "OtherNonInterestExpense",
 ];
 const yahooFinance = require("yahoo-finance2").default; // NOTE the .default
 
@@ -151,6 +151,7 @@ const processData = (jsonData, timescale, keys) => {
   const sortedTimestamps = Array.from(timestamps).sort((a, b) => a - b);
   const dates = sortedTimestamps.map((ts) => new Date(ts * 1000));
 
+  console.log(sortedTimestamps);
   console.log(dates);
 
   // Create a table-like structure
@@ -164,7 +165,7 @@ const processData = (jsonData, timescale, keys) => {
     });
   });
 
-  //   console.log(table);
+  console.log(table);
 
   // Replace the timescale prefix in the index
   const processedTable = Object.keys(table).reduce((acc, key) => {
@@ -173,7 +174,7 @@ const processData = (jsonData, timescale, keys) => {
     return acc;
   }, {});
 
-  //   console.log(processedTable);
+  console.log(processedTable);
 
   // Reorder table to match the order on Yahoo's website
   const reorderedTable = {};
@@ -206,6 +207,8 @@ const getQuarterlyNetIncome = (financials) => {
       }
     });
 
+    console.log(quarterlyNetIncomeDict);
+
     // Sort the dictionary by dates in descending order and pick the top 4
     const sortedQuarterlyNetIncome = Object.entries(quarterlyNetIncomeDict)
       .sort(([dateA], [dateB]) => new Date(dateB) - new Date(dateA)) // Sort by date descending
@@ -222,7 +225,7 @@ const getQuarterlyNetIncome = (financials) => {
 };
 
 async function s() {
-  const symbol = "AAPL";
+  const symbol = "PIK";
 
   const timescale = ""; // Add the appropriate timescale prefix here if needed
   let url = `https://query2.finance.yahoo.com/ws/fundamentals-timeseries/v1/finance/timeseries/${symbol}?symbol=${symbol}`;
@@ -243,15 +246,17 @@ async function s() {
   url += `&period1=${period1}&period2=${period2}`;
 
   const res = await fetch(url);
-  console.log(res);
   const d = await res.json();
-  //   console.log(d.timeseries.result);
+  console.log(d.timeseries.result[0]["quarterlyNetIncome"]);
   const df = processData(d, "quarterly", keys);
+
+  console.log("YAHAHAHHAH");
+
   console.log(df.table["NetIncome"]);
 
   console.log(getQuarterlyNetIncome(df));
 
   //   console.log(url);
 }
-// s();
-abc();
+s();
+// abc();

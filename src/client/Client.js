@@ -88,9 +88,9 @@ class ExtendedClient extends Client {
   ) {
     let dilutionData;
 
-    const yahooData = await new YahooAPI(ticker).getTickerData();
-
-    // console.log(yahooData);
+    const yahooManager = new YahooAPI(ticker);
+    const yahooData = await yahooManager.getTickerData();
+    yahooData.quarterlyIncome = await yahooManager.getQuarterlyIncome();
 
     if (withDilution)
       dilutionData = await this.dilutionTracker.scrapeTickerInfo(ticker);
