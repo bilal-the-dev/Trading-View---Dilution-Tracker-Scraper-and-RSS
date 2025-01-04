@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require('fs')
 
 const { Client } = require("discord.js");
 const WOK = require("wokcommands");
@@ -25,7 +26,7 @@ class ExtendedClient extends Client {
       // headless: false,
       // devtools: true,
       ...(process.platform === "linux" && {
-        executablePath: "/usr/bin/chromium-browser",
+        executablePath:this.getChromiumPath(),
       }),
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
@@ -74,6 +75,17 @@ class ExtendedClient extends Client {
 
       // extra space
     });
+  }
+
+  getChromiumPath(){
+    try {
+    let path = '/usr/bin/chromium'
+
+    fs.access(path)
+    return path
+   } catch (error) {
+      return '/usr/bin/chromium-browser'
+      }
   }
 
   async fetchInfoAboutTicker(
