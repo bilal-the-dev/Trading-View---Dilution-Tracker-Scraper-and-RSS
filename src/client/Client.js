@@ -84,6 +84,7 @@ class ExtendedClient extends Client {
     fs.access(path)
     return path
    } catch (error) {
+    console.log(error)
       return '/usr/bin/chromium-browser'
       }
   }
