@@ -81,7 +81,7 @@ class ExtendedClient extends Client {
     try {
     let path = '/usr/bin/chromium'
 
-    fs.access(path)
+    fs.accessSync(path)
     return path
    } catch (error) {
     console.log(error)
