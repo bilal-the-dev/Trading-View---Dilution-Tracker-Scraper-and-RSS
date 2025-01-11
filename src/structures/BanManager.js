@@ -96,7 +96,7 @@ class BanManager {
     }
 
     if (
-      this.sterilizeName(target.displayName) ===
+      this.sterilizeName(target.user.displayName) ===
       this.sterilizeName(source.displayName)
     )
       return true;
