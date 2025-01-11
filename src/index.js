@@ -1,4 +1,4 @@
-const { IntentsBitField } = require("discord.js");
+const { IntentsBitField, Partials } = require("discord.js");
 const ExtendedClient = require("./client/Client");
 
 const { TOKEN } = process.env;
@@ -10,6 +10,7 @@ const client = new ExtendedClient({
     IntentsBitField.Flags.GuildMembers,
     IntentsBitField.Flags.MessageContent,
   ],
+  partials: [Partials.User, Partials.GuildMember],
 });
 
 client.login(TOKEN);

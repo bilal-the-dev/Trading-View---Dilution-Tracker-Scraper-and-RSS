@@ -12,6 +12,7 @@ const YahooAPI = require("../structures/YahooAPI");
 const { generateEmbed } = require("../utils/embeds");
 const { getButtonRow } = require("../utils/buttons");
 const TradingView = require("../structures/TradingView");
+const BanManager = require("../structures/BanManager");
 
 const { DefaultCommands } = WOK;
 
@@ -29,11 +30,14 @@ class ExtendedClient extends Client {
       }),
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
+
     this.tradingView = new TradingView(this, {
       afterMarketTimeout: 1000 * 20,
       refreshTime: 1000 * 3,
     });
+
     this.tickerFecther = new TickerFetcher(this.dilutionTracker);
+
     this.haltManager = new HaltManager({
       filters: [
         { market: "nasdaq", code: "ludp" },
@@ -41,6 +45,8 @@ class ExtendedClient extends Client {
       ],
       client: this,
     });
+
+    this.bans = new BanManager(this);
 
     // Starting their functions
     this.dilutionTracker.start();
@@ -56,6 +62,7 @@ class ExtendedClient extends Client {
 
       // Inititating managers that need to run when client is ready
       this.haltManager.start();
+      this.bans.start();
       new WOK({
         client: readyClient,
         commandsDir: path.join(__dirname, "..", "commands"),
@@ -106,9 +113,15 @@ class ExtendedClient extends Client {
     const channel = this.channels.cache.get(channelId);
 
     const data = {
-      embeds: [generateEmbed(description)],
+      embeds: [generateEmbed({ description })],
       components: [getButtonRow(ticker)],
     };
+
+    await channel.send(data);
+  }
+
+  async sendLogsMessage(data) {
+    const channel = this.channels.cache.get(process.env.LOGS_CHANNEL_ID);
 
     await channel.send(data);
   }
