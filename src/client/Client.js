@@ -1,5 +1,5 @@
 const path = require("path");
-const fs = require('fs')
+const fs = require("fs");
 
 const { Client } = require("discord.js");
 const WOK = require("wokcommands");
@@ -27,14 +27,14 @@ class ExtendedClient extends Client {
       // headless: false,
       // devtools: true,
       ...(process.platform === "linux" && {
-        executablePath:this.getChromiumPath(),
+        executablePath: this.getChromiumPath(),
       }),
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
     this.tradingView = new TradingView(this, {
       afterMarketTimeout: 1000 * 20,
-      refreshTime: 1000 * 3,
+      refreshTime: 1000 * 10,
     });
 
     this.tickerFecther = new TickerFetcher(this.dilutionTracker);
@@ -84,16 +84,16 @@ class ExtendedClient extends Client {
     });
   }
 
-  getChromiumPath(){
+  getChromiumPath() {
     try {
-    let path = '/usr/bin/chromium'
+      let path = "/usr/bin/chromium";
 
-    fs.accessSync(path)
-    return path
-   } catch (error) {
-    console.log(error)
-      return '/usr/bin/chromium-browser'
-      }
+      fs.accessSync(path);
+      return path;
+    } catch (error) {
+      console.log(error);
+      return "/usr/bin/chromium-browser";
+    }
   }
 
   async fetchInfoAboutTicker(
