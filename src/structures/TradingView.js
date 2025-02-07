@@ -71,10 +71,20 @@ class TradingView {
       })
     );
 
-    const data = await res.json();
+    let data;
+
+    if (res.headers.get("content-type").includes("application/json"))
+      data = await res.json();
+
+    if (res.headers.get("content-type").includes("text"))
+      data = await res.text();
 
     if (!res.ok) {
+      console.log(res);
+
       console.log(data);
+
+      await setTimeout(this.config.refreshTime);
 
       throw new Error(res.statusText);
     }
