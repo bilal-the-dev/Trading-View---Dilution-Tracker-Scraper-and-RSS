@@ -5,11 +5,7 @@ const cron = require("node-cron");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const timezone = require("dayjs/plugin/timezone");
-const {
-  parseInstOwnData,
-  parseRawFactors,
-  parseCash,
-} = require("../utils/parse");
+const { parseInstOwnData, parseRawFactors } = require("../utils/parse");
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -175,7 +171,7 @@ class TradingView {
       let header;
 
       if (priceChange >= 15 && priceChange < 30) header = "Stock pumped 15%";
-      if (priceChange >= 30 && priceChange < 15) header = "Stock pumped 30%";
+      if (priceChange >= 30) header = "Stock pumped 30%";
 
       if (!header) continue;
 
