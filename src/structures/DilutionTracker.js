@@ -70,7 +70,10 @@ class DilutionTracker {
 
   async scrapeTickerInfo(
     ticker,
-    { fetchNews = true, fetchShortInterest = true }
+    { fetchNews, fetchShortInterest } = {
+      fetchNews: true,
+      fetchShortInterest: true,
+    }
   ) {
     if (!this.isLoggedIn)
       throw new Error("Have not logged in into dilution yet");
