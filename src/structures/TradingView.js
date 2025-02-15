@@ -5,6 +5,11 @@ const cron = require("node-cron");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const timezone = require("dayjs/plugin/timezone");
+const {
+  parseInstOwnData,
+  parseRawFactors,
+  parseCash,
+} = require("../utils/parse");
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -28,7 +33,7 @@ class TradingView {
   #cookie = ` sessionid=${TV_SESSION_ID}; sessionid_sign=${TV_SESSION_ID_SIGN_IN}`;
   #username;
   #started;
-  #tickers = new Set();
+  #tickers = [];
   constructor(client, config) {
     this.config = config;
     this.client = client;
@@ -89,12 +94,12 @@ class TradingView {
       throw new Error(res.statusText);
     }
 
-    const arrayOfTickerNames = data.data.map((t) => t.s);
-
-    if (this.#tickers.size === 0) {
+    if (!this.#tickers.length) {
       console.log("Trading View: first time adding to cache");
 
-      this.#tickers = new Set(arrayOfTickerNames);
+      this.#tickers = this.filterNewTickers(data.data);
+      console.log(this.#tickers);
+
       return;
     }
 
@@ -102,7 +107,7 @@ class TradingView {
     // console.log(arrayOfTickerNames);
     console.log(data.totalCount);
 
-    const newTickers = data.data.filter((t) => !this.#tickers.has(t.s));
+    const newTickers = this.filterNewTickers(data.data);
 
     // console.log(newTickers);
 
@@ -134,20 +139,57 @@ class TradingView {
           throw new Error(`Invalid ticker symbol: ${t}`);
       }
 
-      return this.client.sendTickerMessage(
+      const data = await this.client.dilutionTracker.scrapeTickerInfo(t.d[0], {
+        fetchNews: false,
+        fetchShortInterest: false,
+      });
+
+      const factors = parseRawFactors(data);
+
+      const i = data.cashPosText?.indexOf("of") || 30; // estimated guess for the **of** word index
+      await this.client.sendTickerMessage(
         t.d[0],
-        `# ${finalSpacing[0] + t.d[0] + finalSpacing[1]}`,
+        `# ${finalSpacing[0] + t.d[0] + finalSpacing[1]}\n\n${
+          t.header
+        }\n\n${factors}\n${parseInstOwnData(data)}**Cash Position**: ${
+          data.cashPosText?.slice(16, i).trim() || "N/A"
+        }`,
         TRADING_VIEW_CHANNEL_ID
       );
+      this.#tickers.push(t);
     });
 
+    console.log(newTickers.length);
     await Promise.all(promises);
-
-    this.#tickers = new Set([...this.#tickers, ...arrayOfTickerNames]);
 
     await setTimeout(this.config.refreshTime);
   }
 
+  filterNewTickers(justFetchedTickers) {
+    const newFilteredTickers = [];
+    for (const ticker of justFetchedTickers) {
+      const { s, d } = ticker;
+
+      const priceChange = d[12];
+
+      let header;
+
+      if (priceChange >= 15 && priceChange < 30) header = "Stock pumped 15%";
+      if (priceChange >= 30 && priceChange < 15) header = "Stock pumped 30%";
+
+      if (!header) continue;
+
+      const tickerAlreadyFound = this.#tickers.find(
+        (t) => t.s === s && t.d[12] >= priceChange
+      );
+
+      if (tickerAlreadyFound) continue;
+
+      ticker.header = header;
+      newFilteredTickers.push(ticker);
+    }
+    return newFilteredTickers;
+  }
   async start() {
     if (SHOULD_RUN_TV === "false")
       return console.log("Did not start TV manager");
@@ -265,10 +307,10 @@ class TradingView {
   }
 
   refreshTickerCache() {
-    cron.schedule("*/5 * * * *", () => {
+    cron.schedule("0 0 * * *", () => {
       console.log("Refreshing TV Cache");
 
-      this.#tickers = new Set();
+      this.#tickers = [];
     });
   }
 

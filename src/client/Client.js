@@ -24,7 +24,7 @@ class ExtendedClient extends Client {
 
     // Initiating Managers
     this.dilutionTracker = new DilutionTracker({
-      // headless: false,
+      headless: process.env.debug == "true" ? false : true,
       // devtools: true,
       ...(process.platform === "linux" && {
         executablePath: this.getChromiumPath(),
@@ -98,19 +98,18 @@ class ExtendedClient extends Client {
 
   async fetchInfoAboutTicker(
     ticker,
-    {
-      // withYahoo = true
-      withDilution = true,
-    } = {
+    { withYahoo, withDilution } = {
       withYahoo: true,
       withDilution: true,
     }
   ) {
-    let dilutionData;
+    let dilutionData, yahooData;
 
-    const yahooManager = new YahooAPI(ticker);
-    const yahooData = await yahooManager.getTickerData();
-    yahooData.quarterlyIncome = await yahooManager.getQuarterlyIncome();
+    if (withYahoo) {
+      const yahooManager = new YahooAPI(ticker);
+      yahooData = await yahooManager.getTickerData();
+      yahooData.quarterlyIncome = await yahooManager.getQuarterlyIncome();
+    }
 
     if (withDilution)
       dilutionData = await this.dilutionTracker.scrapeTickerInfo(ticker);

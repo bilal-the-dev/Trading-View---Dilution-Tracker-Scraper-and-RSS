@@ -68,13 +68,16 @@ class DilutionTracker {
     this.isLoggedIn = true;
   }
 
-  async scrapeTickerInfo(ticker) {
+  async scrapeTickerInfo(
+    ticker,
+    { fetchNews = true, fetchShortInterest = true }
+  ) {
     if (!this.isLoggedIn)
       throw new Error("Have not logged in into dilution yet");
 
     const page = await this.browser.newPage();
 
-    let shortInterestData;
+    let shortInterestData, instOwnData;
     let news = [];
 
     await this.setDefaultHeaders(page);
@@ -117,8 +120,13 @@ class DilutionTracker {
 
       // console.log(response.url());
 
-      if (response.url().endsWith(`getShortInterest?ticker=${ticker}`))
+      if (
+        response.url().endsWith(`getShortInterest?ticker=${ticker}`) &&
+        fetchShortInterest
+      )
         shortInterestData = await response.json().catch(console.error);
+      if (response.url().endsWith(`/getInstOwn?ticker=${ticker}`))
+        instOwnData = await response.json().catch(console.error);
     });
 
     await page.goto(`${DILUTION_TRACKER_URL}/app/search/${ticker}`, {
@@ -164,7 +172,7 @@ class DilutionTracker {
 
     console.log(data);
 
-    if (data?.newsButton) {
+    if (data?.newsButton && fetchNews) {
       const newsRes = await page.waitForResponse(
         (response) =>
           response.url() ===
@@ -183,7 +191,7 @@ class DilutionTracker {
 
     await page.close();
 
-    return { ...data, shortInterestData, news };
+    return { ...data, shortInterestData, instOwnData, news };
   }
 
   async start() {

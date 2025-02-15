@@ -14,17 +14,6 @@ exports.parseTickerData = (data) => {
     !dilutionData?.cashPosText &&
     (historicalText = "It doesn't matter for this stock");
 
-  const cashPos = dilutionData?.cashPosText
-    ? `${subHeader} Cash Position ${subHeader}\n${dilutionData.cashPosText}\n\n`
-    : "";
-
-  const factors = dilutionData?.rawFactorsContentArray
-    ? dilutionData.rawFactorsContentArray.reduce(
-        (acc, cur) => `${acc}${cur.title}: ${cur.text}\n`,
-        ""
-      )
-    : "N/A";
-
   const parsedNews =
     dilutionData?.news?.news?.length > 0
       ? dilutionData.news.news
@@ -57,7 +46,11 @@ exports.parseTickerData = (data) => {
 
   const text = `# ${ticker}\n${getYahooString(
     parsedYahooData
-  )}\n\n${header} DILUTION TRACKER\n${historicalText}\n\n${cashPos}${subHeader} Short Interest ${subHeader}\n${shortInterest}${subHeader} Dilution ${subHeader}\n${factors}\n${getQuarterlyString(
+  )}\n\n${header} DILUTION TRACKER\n${historicalText}\n\n${this.parseCash(
+    dilutionData
+  )}${subHeader} Short Interest ${subHeader}\n${shortInterest}${this.parseInstOwnData(
+    dilutionData
+  )}${this.parseRawFactors(dilutionData)}\n${getQuarterlyString(
     parsedYahooData
   )}\n${header} NEWS\n${parsedNews}`;
 
@@ -249,3 +242,31 @@ function getExchangeName(exchange) {
 
   return d[exchange] || exchange;
 }
+
+exports.parseCash = (dilutionData) => {
+  const cashPos = dilutionData?.cashPosText
+    ? `${subHeader} Cash Position ${subHeader}\n${dilutionData.cashPosText}\n\n`
+    : "";
+  return cashPos;
+};
+
+exports.parseRawFactors = (dilutionData) => {
+  const emojiMap = { Low: "🟢", High: "🔴", Medium: "🟡" };
+
+  const factors = dilutionData?.rawFactorsContentArray
+    ? dilutionData.rawFactorsContentArray.reduce(
+        (acc, cur) => `${acc}${cur.title}: ${emojiMap[cur.text] || cur.text}\n`,
+        ""
+      )
+    : "N/A";
+  return `${subHeader} Dilution  ${subHeader}\n${factors}`;
+};
+
+exports.parseInstOwnData = (dilutionData) => {
+  let str = "N/A\n\n";
+
+  if (dilutionData?.instOwnData)
+    str = `${dilutionData.instOwnData?.totalInstOwnPct || "N/A"}%\n\n`;
+
+  return `${subHeader} Inst Own  ${subHeader}: ${str}`;
+};
