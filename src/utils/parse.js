@@ -251,11 +251,11 @@ exports.parseCash = (dilutionData) => {
 };
 
 exports.parseRawFactors = (dilutionData) => {
-  const emojiMap = { Low: "🟢", High: "🔴", Medium: "🟡" };
+  // const emojiMap = { Low: "🟢", High: "🔴", Medium: "🟡" };
 
   const factors = dilutionData?.rawFactorsContentArray
     ? dilutionData.rawFactorsContentArray.reduce(
-        (acc, cur) => `${acc}${cur.title}: ${emojiMap[cur.text] || cur.text}\n`,
+        (acc, cur) => `${acc}${cur.title}: ${cur.text}\n`,
         ""
       )
     : "N/A";
