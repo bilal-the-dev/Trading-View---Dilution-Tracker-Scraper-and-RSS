@@ -168,15 +168,21 @@ class TradingView {
 
       const priceChange = d[12];
 
-      let header;
+      let header, priceCompareValue;
 
-      if (priceChange >= 15 && priceChange < 30) header = "Stock pumped 15%";
-      if (priceChange >= 30) header = "Stock pumped 30%";
+      if (priceChange >= 15 && priceChange < 30) {
+        header = "Stock pumped 15%";
+        priceCompareValue = 15;
+      }
+      if (priceChange >= 30) {
+        header = "Stock pumped 30%";
+        priceCompareValue = 30;
+      }
 
       if (!header) continue;
 
       const tickerAlreadyFound = this.#tickers.find(
-        (t) => t.s === s && t.d[12] >= priceChange
+        (t) => t.s === s && t.d[12] >= priceCompareValue
       );
 
       if (tickerAlreadyFound) continue;
