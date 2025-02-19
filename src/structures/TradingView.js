@@ -156,7 +156,7 @@ class TradingView {
     });
 
     console.log(newTickers.length);
-    await Promise.all(promises);
+    await Promise.allSettled(promises);
 
     await setTimeout(this.config.refreshTime);
   }
