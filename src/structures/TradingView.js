@@ -196,7 +196,12 @@ class TradingView {
     this.refreshTickerCache();
     this.keepCheckingCookie();
     while (true) {
-      await this.checkForNewTickers().catch(console.error);
+      try {
+        await this.checkForNewTickers();
+      } catch (error) {
+        console.log(error);
+        await setTimeout(this.config.refreshTime);
+      }
     }
   }
 
