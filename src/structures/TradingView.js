@@ -142,14 +142,19 @@ class TradingView {
 
       const factors = parseRawFactors(data);
 
-      const i = data.cashPosText?.indexOf("of") || 30; // estimated guess for the **of** word index
+      const i = data.cashPosText?.indexOf("of");
+      let cashData = "N/A";
+
+      if (data.cashPosText?.includes("cash left"))
+        cashData = data.cashPosText?.slice(16, i).trim() || "N/A";
+
       await this.client.sendTickerMessage(
         t.d[0],
         `# ${finalSpacing[0] + t.d[0] + finalSpacing[1]}\n\n${
           t.header
-        }\n\n${factors}\n${parseInstOwnData(data)}**Cash Position**: ${
-          data.cashPosText?.slice(16, i).trim() || "N/A"
-        }`,
+        }\n\n${factors}\n${parseInstOwnData(
+          data
+        )}**Cash Position**: ${cashData}`,
         TRADING_VIEW_CHANNEL_ID
       );
       this.#tickers.push(t);

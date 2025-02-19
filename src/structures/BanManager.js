@@ -26,12 +26,7 @@ class BanManager {
         this.#impersonatedUserId
       );
 
-      console.log(member.displayName.toLowerCase().trim());
-
-      if (!this.matchName(member, impersonatedMember))
-        return console.log(`${member.displayName} was not impersonater`);
-
-      console.log(`${member.displayName} was impersonater`);
+      if (!this.matchName(member, impersonatedMember)) return;
 
       await member.ban();
 
@@ -68,8 +63,6 @@ class BanManager {
   async loopOverMembersAndCheck() {
     const guild = this.client.guilds.cache.get(GUILD_ID);
 
-    console.log(guild);
-
     console.log("Looping!!!");
 
     for (const member of guild.members.cache.values()) {
@@ -79,8 +72,6 @@ class BanManager {
 
   matchName(target, source) {
     if (target.nickname) {
-      console.log(target.nickname, " has a nickname!!");
-
       if (
         source.nickname &&
         this.sterilizeName(target.nickname) ===
