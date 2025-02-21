@@ -34,7 +34,7 @@ class ExtendedClient extends Client {
 
     this.tradingView = new TradingView(this, {
       afterMarketTimeout: 1000 * 20,
-      refreshTime: 1000 * 10,
+      refreshTime: 1000 * 30,
     });
 
     this.tickerFecther = new TickerFetcher(this.dilutionTracker);

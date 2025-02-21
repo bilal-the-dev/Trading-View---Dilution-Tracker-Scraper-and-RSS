@@ -155,6 +155,10 @@ marketType=13
       if (data.cashPosText?.includes("cash left"))
         cashData = data.cashPosText?.slice(16, i).trim() || "N/A";
 
+      if (data.cashPosText?.includes("cashflow positive"))
+        cashData = 'Positive '+ (data.cashPosText?.slice(i+2).trim() || "N/A");
+
+
       await this.client.sendTickerMessage(
         t.d[0],
         `# ${finalSpacing[0] + t.d[0] + finalSpacing[1]}\n\n${
