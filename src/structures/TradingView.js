@@ -46,12 +46,19 @@ class TradingView {
     const preMarketStart = now.set("hour", 4).set("minute", 0).set("second", 0);
     const preMarketEnd = now.set("hour", 9).set("minute", 30).set("second", 0);
 
-    const body =
-      now >= openMarketStart && now <= openMarketEnd
-        ? OPEN_MARKET_CONFIG
-        : now >= preMarketStart && now <= preMarketEnd
-        ? PRE_MARKET_CONFIG
-        : null;
+    let body, marketType
+
+    if( now >= openMarketStart && now <= openMarketEnd){
+body= OPEN_MARKET_CONFIG
+marketType=12
+    }
+
+    if(now >= preMarketStart && now <= preMarketEnd){
+      body= PRE_MARKET_CONFIG
+marketType=13
+    }
+ 
+    console.log(`Market type: ${marketType}`)
 
     console.log(`Current time in EST: ${now.format()}`);
 
@@ -93,7 +100,7 @@ class TradingView {
     if (!this.#tickers.length) {
       console.log("Trading View: first time adding to cache");
 
-      this.#tickers = this.filterNewTickers(data.data);
+      this.#tickers = this.filterNewTickers(data.data,marketType);
       console.log(this.#tickers);
 
       return;
@@ -103,7 +110,7 @@ class TradingView {
     // console.log(arrayOfTickerNames);
     console.log(data.totalCount);
 
-    const newTickers = this.filterNewTickers(data.data);
+    const newTickers = this.filterNewTickers(data.data,marketType);
 
     // console.log(newTickers);
 
@@ -166,12 +173,12 @@ class TradingView {
     await setTimeout(this.config.refreshTime);
   }
 
-  filterNewTickers(justFetchedTickers) {
+  filterNewTickers(justFetchedTickers, marketType) {
     const newFilteredTickers = [];
     for (const ticker of justFetchedTickers) {
       const { s, d } = ticker;
 
-      const priceChange = d[12];
+      const priceChange = d[marketType];
 
       let header, priceCompareValue;
 
@@ -187,7 +194,7 @@ class TradingView {
       if (!header) continue;
 
       const tickerAlreadyFound = this.#tickers.find(
-        (t) => t.s === s && t.d[12] >= priceCompareValue
+        (t) => t.s === s && t.d[marketType] >= priceCompareValue
       );
 
       if (tickerAlreadyFound) continue;
