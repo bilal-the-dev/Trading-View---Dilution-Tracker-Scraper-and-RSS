@@ -38,9 +38,9 @@ exports.parseTickerData = (data) => {
 
     const numberedInterest = Number(shortInterestAsPercentOfFloat);
 
-    if (numberedInterest < 5) emoji = "🟢";
-    if (numberedInterest > 10) emoji = "🔴";
-    if (numberedInterest >= 5 && numberedInterest <= 10) emoji = "🟡";
+    if (numberedInterest < 10) emoji = "🟢";
+    if (numberedInterest > 20) emoji = "🔴";
+    if (numberedInterest >= 10 && numberedInterest <= 20) emoji = "🟡";
     shortInterest = `${shortInterestAsPercentOfFloat}% ${emoji} as of ${settlementDate} settlement date and published on ${releaseDate}\n-# Last Updated: ${releasedDaysAgo} days ago\n\n`;
   }
 
