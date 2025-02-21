@@ -182,8 +182,10 @@ marketType=13
     for (const ticker of justFetchedTickers) {
       const { s, d } = ticker;
 
+      console.log(d[0])
       const priceChange = d[marketType];
 
+      console.log(priceChange)
       let header, priceCompareValue;
 
       if (priceChange >= 15 && priceChange < 30) {
