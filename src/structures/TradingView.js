@@ -30,6 +30,7 @@ class TradingView {
   #username;
   #started;
   #tickers = [];
+  #previousMarket;
   constructor(client, config) {
     this.config = config;
     this.client = client;
@@ -97,12 +98,13 @@ marketType=13
       throw new Error(res.statusText);
     }
 
-    if (!this.#tickers.length) {
-      console.log("Trading View: first time adding to cache");
+    if (!this.#tickers.length || marketType !== this.#previousMarket) {
+      console.log("Trading View: first time adding to cache OR new market");
 
       this.#tickers = this.filterNewTickers(data.data,marketType);
       console.log(this.#tickers);
 
+      this.#previousMarket = marketType
       return;
     }
 
@@ -174,6 +176,8 @@ marketType=13
     console.log(newTickers.length);
     await Promise.allSettled(promises);
 
+    
+    this.#previousMarket = marketType
     await setTimeout(this.config.refreshTime);
   }
 
