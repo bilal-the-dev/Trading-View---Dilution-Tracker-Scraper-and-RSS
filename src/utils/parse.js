@@ -36,7 +36,7 @@ exports.parseTickerData = (data) => {
     dilutionData
   )}**Float**: ${dilutionData.float ? dilutionData.float?.latestFloat + "M" : "N/A"}\n\n${this.parseRawFactors(dilutionData)}\n${getQuarterlyString(
     parsedYahooData
-  )}\n${header} NEWS\n${parsedNews}\n\n${ticker}`;
+  )}\n${header} NEWS\n${parsedNews}\n${ticker}`;
 
   return text;
 };
