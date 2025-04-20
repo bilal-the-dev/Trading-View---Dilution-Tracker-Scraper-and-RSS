@@ -20,11 +20,11 @@ const {
 } = process.env;
 
 const rawFactors = [
-  { title: "Overall Risk", selector: "drOverallRatingIcon" },
-  { title: "Offering Ability", selector: "drOfferingAbilityRatingIcon" },
-  { title: "Overhead Supply", selector: "drDilAmtRatingIcon" },
+  { title: "Risk", selector: "drOverallRatingIcon" },
+  { title: "Offering", selector: "drOfferingAbilityRatingIcon" },
+  { title: "Overhead", selector: "drDilAmtRatingIcon" },
   { title: "Historical", selector: "drHistRatingIcon" },
-  { title: "Cash Need", selector: "drCashNeedRatingIcon" },
+  { title: "Cash", selector: "drCashNeedRatingIcon" },
 ];
 
 class DilutionTracker {
@@ -205,7 +205,7 @@ class DilutionTracker {
 
     await page.close();
 
-    return { ...data, shortInterestData, instOwnData,float, osShares, news };
+    return { ...data, shortInterestData, instOwnData, float, osShares, news };
   }
 
   async start() {

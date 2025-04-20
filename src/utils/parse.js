@@ -30,7 +30,7 @@ exports.parseTickerData = (data) => {
   );
   const text = `# ${ticker}\n${getYahooString(
     parsedYahooData
-  )}\n\n${header} DILUTION TRACKER\n${historicalText}\n\n${this.parseCash(
+  )}\n\n${header} DILUTION\n${historicalText}\n\n${this.parseCash(
     dilutionData
   )}${subHeader} Short Interest ${subHeader}\n${shortInterest}${this.parseInstOwnData(
     dilutionData
@@ -72,15 +72,7 @@ function getYahooString(yahooData) {
 }
 
 function getQuarterlyString(yahooData) {
-  const str = `${header} QUARTERLY INCOME\n${
-    yahooData.quaterlyIncome
-  }\n${header} CHECKLIST\nIs ${
-    yahooData.symbol
-  } in a downtrend?   👀 Tradingview 👀\nIs ${
-    yahooData.symbol
-  } above CMP?   👀 TradingView 👀\n"Is there a MMP within 100% of current price?   👀 TradingView 👀\n\nFull-Time Employees: ${
-    yahooData.employees ?? "N/A"
-  }`;
+  const str = `${header} QUARTERLY INCOME\n${yahooData.quaterlyIncome}`;
   return str;
 }
 
