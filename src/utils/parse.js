@@ -32,9 +32,9 @@ exports.parseTickerData = (data) => {
     parsedYahooData
   )}\n\n${header} DILUTION TRACKER\n${historicalText}\n\n${this.parseCash(
     dilutionData
-  )}${subHeader} Short Interest ${subHeader}\n${shortInterest}**Float**: ${dilutionData.float ? dilutionData.float?.latestFloat + "M" : "N/A"}\n${this.parseInstOwnData(
+  )}${subHeader} Short Interest ${subHeader}\n${shortInterest}${this.parseInstOwnData(
     dilutionData
-  )}${this.parseRawFactors(dilutionData)}\n${getQuarterlyString(
+  )}**Float**: ${dilutionData.float ? dilutionData.float?.latestFloat + "M" : "N/A"}\n\n${this.parseRawFactors(dilutionData)}\n${getQuarterlyString(
     parsedYahooData
   )}\n${header} NEWS\n${parsedNews}\n\n${ticker}`;
 
@@ -48,25 +48,23 @@ function getYahooString(yahooData) {
     yahooData.exchange ?? "N/A"
   }\nMarket Cap: ${
     yahooData.marketCap ?? "N/A"
-  }\n\n${header} PROFITABILITY \nProfit Margin: ${
+  }\n\n${header} STATISTIC \nProfit Margin: ${
     yahooData.profitMargins ?? "N/A"
   }\nOperating Margin: ${
     yahooData.operatingMargins ?? "N/A"
-  }\n\n${header} MANAGEMENT EFFECTIVENESS\nReturn on Assets: ${
+  }\nReturn on Assets: ${
     yahooData.returnOnAssets ?? "N/A"
-  }\nReturn on Equity: ${
-    yahooData.returnOnEquity ?? "N/A"
-  }\n\n${header} CASHFLOW STATEMENT\nTotal Cash: ${
+  }\nReturn on Equity: ${yahooData.returnOnEquity ?? "N/A"}\nTotal Cash: ${
     yahooData.totalCash ?? "N/A"
   }\nOperating Cash Flow: ${
     yahooData.operatingCashflow ?? "N/A"
   }\nLeveraged Free Cash Flow: ${
     yahooData.freeCashflow ?? "N/A"
-  }\n\n${header} STOCK PRICE HISTORY\n52-Week Change: ${
+  }\n52-Week Change: ${
     yahooData["52WeekChange"] ?? "N/A"
-  }\n\n${header} SHARE STATISTICS\nInsider Ownership: ${
+  }\n\nInstitutional Ownership: ${yahooData.instituion ?? "N/A"}\nInsider Ownership: ${
     yahooData.insiders ?? "N/A"
-  }\nInstitutional Ownership: ${yahooData.instituion ?? "N/A"}\nFloat Shares: ${
+  }\nFloat Shares: ${
     yahooData.floatShares ?? "N/A"
   }\nTrailing EPS: ${yahooData.trailingEps ?? "N/A"}`;
 
@@ -253,10 +251,10 @@ exports.parseRawFactors = (dilutionData) => {
 };
 
 exports.parseInstOwnData = (dilutionData) => {
-  let str = "N/A\n\n";
+  let str = "N/A\n";
 
   if (dilutionData?.instOwnData)
-    str = `${dilutionData.instOwnData?.totalInstOwnPct || "N/A"}%\n\n`;
+    str = `${dilutionData.instOwnData?.totalInstOwnPct || "N/A"}%\n`;
 
   return `${subHeader} Inst Own  ${subHeader}: ${str}`;
 };
