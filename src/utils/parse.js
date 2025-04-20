@@ -32,7 +32,7 @@ exports.parseTickerData = (data) => {
     parsedYahooData
   )}\n\n${header} DILUTION\n${historicalText}\n\n${this.parseCash(
     dilutionData
-  )}${subHeader} Short Interest ${subHeader}\n${shortInterest}${this.parseInstOwnData(
+  )}${subHeader} Short Interest ${subHeader}: ${shortInterest}${this.parseInstOwnData(
     dilutionData
   )}**Float**: ${dilutionData.float ? dilutionData.float?.latestFloat + "M" : "N/A"}\n\n${this.parseRawFactors(dilutionData)}\n${getQuarterlyString(
     parsedYahooData
@@ -268,9 +268,9 @@ exports.parseShortInterest = (shortInterestData) => {
   if (!shortInterestData) return "N/A\n";
   const {
     shortInterestAsPercentOfFloat,
-    releasedDaysAgo,
-    releaseDate,
-    settlementDate,
+    // releasedDaysAgo,
+    // releaseDate,
+    // settlementDate,
   } = shortInterestData;
 
   let emoji;
@@ -280,7 +280,8 @@ exports.parseShortInterest = (shortInterestData) => {
   if (numberedInterest < 10) emoji = "🟢";
   if (numberedInterest > 20) emoji = "🔴";
   if (numberedInterest >= 10 && numberedInterest <= 20) emoji = "🟡";
-  const shortInterest = `${shortInterestAsPercentOfFloat}% ${emoji} as of ${settlementDate} settlement date and published on ${releaseDate}\n-# Last Updated: ${releasedDaysAgo} days ago\n`;
+  const shortInterest = `${shortInterestAsPercentOfFloat}% ${emoji}\n`;
+  // const shortInterest = `${shortInterestAsPercentOfFloat}% ${emoji} as of ${settlementDate} settlement date and published on ${releaseDate}\n-# Last Updated: ${releasedDaysAgo} days ago\n`;
 
   return shortInterest;
 };
