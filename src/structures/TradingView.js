@@ -6,9 +6,9 @@ const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const timezone = require("dayjs/plugin/timezone");
 const {
-  parseInstOwnData,
   parseRawFactors,
   parseCashPosText,
+  parseShortInterest,
 } = require("../utils/parse");
 
 dayjs.extend(utc);
@@ -150,8 +150,11 @@ class TradingView {
 
       const data = await this.client.dilutionTracker.scrapeTickerInfo(t.d[0], {
         fetchNews: false,
-        fetchShortInterest: false,
+        fetchShortInterest: true,
+        fetchfloat: true,
       });
+
+      const shortInterest = parseShortInterest(data.shortInterestData);
 
       const factors = parseRawFactors(data);
 
@@ -161,9 +164,7 @@ class TradingView {
         t.d[0],
         `# ${finalSpacing[0] + t.d[0] + finalSpacing[1]}\n\n${
           t.header
-        }\n\n${factors}\n${parseInstOwnData(
-          data
-        )}**Cash Position**: ${cashData}`,
+        }\n\n**SI**: ${shortInterest}\n**Inst Own**: ${data.instOwnData ? data.instOwnData.totalInstOwnPct + "%" : "N/A"}\n**Float**: ${data.float ? data.float.latestFloat + "M" : "N/A"}\n\n${factors}\n**Cash Position**: ${cashData}`,
         TRADING_VIEW_CHANNEL_ID
       );
       this.#tickers.push(t);

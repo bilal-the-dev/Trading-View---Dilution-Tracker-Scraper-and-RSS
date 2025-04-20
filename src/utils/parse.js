@@ -7,7 +7,7 @@ exports.parseTickerData = (data) => {
   const parsedYahooData = parseYahooData(yahooData);
 
   let historicalText = `${subHeader} Historical O/S & Potential Dilution ${subHeader}\n${
-    dilutionData?.historicalText.split("calculated using")[0] ?? "N/A"
+    dilutionData?.historicalText?.split("calculated using")[0] ?? "N/A"
   }`;
 
   !dilutionData?.historicalText &&
@@ -25,34 +25,18 @@ exports.parseTickerData = (data) => {
           )
       : "N/A";
 
-  let shortInterest = "N/A\n\n";
-  if (dilutionData?.shortInterestData) {
-    const {
-      shortInterestAsPercentOfFloat,
-      releasedDaysAgo,
-      releaseDate,
-      settlementDate,
-    } = dilutionData.shortInterestData;
-
-    let emoji;
-
-    const numberedInterest = Number(shortInterestAsPercentOfFloat);
-
-    if (numberedInterest < 10) emoji = "🟢";
-    if (numberedInterest > 20) emoji = "🔴";
-    if (numberedInterest >= 10 && numberedInterest <= 20) emoji = "🟡";
-    shortInterest = `${shortInterestAsPercentOfFloat}% ${emoji} as of ${settlementDate} settlement date and published on ${releaseDate}\n-# Last Updated: ${releasedDaysAgo} days ago\n\n`;
-  }
+  const shortInterest =
+    this.parseShortInterest(dilutionData?.shortInterestData) || "N/A\n\n";
 
   const text = `# ${ticker}\n${getYahooString(
     parsedYahooData
   )}\n\n${header} DILUTION TRACKER\n${historicalText}\n\n${this.parseCash(
     dilutionData
-  )}${subHeader} Short Interest ${subHeader}\n${shortInterest}${this.parseInstOwnData(
+  )}${subHeader} Short Interest ${subHeader}\n${shortInterest}**Float**: ${dilutionData.float ? dilutionData.float?.latestFloat + "M" : "N/A"}\n${this.parseInstOwnData(
     dilutionData
   )}${this.parseRawFactors(dilutionData)}\n${getQuarterlyString(
     parsedYahooData
-  )}\n${header} NEWS\n${parsedNews}`;
+  )}\n${header} NEWS\n${parsedNews}\n\n${ticker}`;
 
   return text;
 };
@@ -251,7 +235,7 @@ exports.parseCash = (dilutionData) => {
 };
 
 exports.parseRawFactors = (dilutionData) => {
-  const emojiMap = { Low: "🟢", High: "🔴", Medium: "🟡" };
+  const emojiMap = { Low: "🟢", High: "🔴", Medium: "🟠" };
 
   const factors = dilutionData?.rawFactorsContentArray
     ? dilutionData.rawFactorsContentArray.reduce(
@@ -288,4 +272,25 @@ exports.parseCashPosText = (cashPosText) => {
     cashData = "Positive " + (cashPosText?.slice(i + 2).trim() || "N/A");
 
   return cashData;
+};
+
+exports.parseShortInterest = (shortInterestData) => {
+  if (!shortInterestData) return;
+  const {
+    shortInterestAsPercentOfFloat,
+    releasedDaysAgo,
+    releaseDate,
+    settlementDate,
+  } = shortInterestData;
+
+  let emoji;
+
+  const numberedInterest = Number(shortInterestAsPercentOfFloat);
+
+  if (numberedInterest < 10) emoji = "🟢";
+  if (numberedInterest > 20) emoji = "🔴";
+  if (numberedInterest >= 10 && numberedInterest <= 20) emoji = "🟡";
+  const shortInterest = `${shortInterestAsPercentOfFloat}% ${emoji} as of ${settlementDate} settlement date and published on ${releaseDate}\n-# Last Updated: ${releasedDaysAgo} days ago\n\n`;
+
+  return shortInterest;
 };
