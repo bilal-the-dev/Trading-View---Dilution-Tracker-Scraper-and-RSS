@@ -5,7 +5,11 @@ const cron = require("node-cron");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const timezone = require("dayjs/plugin/timezone");
-const { parseInstOwnData, parseRawFactors } = require("../utils/parse");
+const {
+  parseInstOwnData,
+  parseRawFactors,
+  parseCashPosText,
+} = require("../utils/parse");
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -47,19 +51,19 @@ class TradingView {
     const preMarketStart = now.set("hour", 4).set("minute", 0).set("second", 0);
     const preMarketEnd = now.set("hour", 9).set("minute", 30).set("second", 0);
 
-    let body, marketType
+    let body, marketType;
 
-    if( now >= openMarketStart && now <= openMarketEnd){
-body= OPEN_MARKET_CONFIG
-marketType=12
+    if (now >= openMarketStart && now <= openMarketEnd) {
+      body = OPEN_MARKET_CONFIG;
+      marketType = 12;
     }
 
-    if(now >= preMarketStart && now <= preMarketEnd){
-      body= PRE_MARKET_CONFIG
-marketType=13
+    if (now >= preMarketStart && now <= preMarketEnd) {
+      body = PRE_MARKET_CONFIG;
+      marketType = 13;
     }
- 
-    console.log(`Market type: ${marketType}`)
+
+    console.log(`Market type: ${marketType}`);
 
     console.log(`Current time in EST: ${now.format()}`);
 
@@ -101,10 +105,10 @@ marketType=13
     if (!this.#tickers.length || marketType !== this.#previousMarket) {
       console.log("Trading View: first time adding to cache OR new market");
 
-      this.#tickers = this.filterNewTickers(data.data,marketType);
+      this.#tickers = this.filterNewTickers(data.data, marketType);
       console.log(this.#tickers);
 
-      this.#previousMarket = marketType
+      this.#previousMarket = marketType;
       return;
     }
 
@@ -112,7 +116,7 @@ marketType=13
     // console.log(arrayOfTickerNames);
     console.log(data.totalCount);
 
-    const newTickers = this.filterNewTickers(data.data,marketType);
+    const newTickers = this.filterNewTickers(data.data, marketType);
 
     // console.log(newTickers);
 
@@ -151,15 +155,7 @@ marketType=13
 
       const factors = parseRawFactors(data);
 
-      const i = data.cashPosText?.indexOf("of");
-      let cashData = "N/A";
-
-      if (data.cashPosText?.includes("cash left"))
-        cashData = data.cashPosText?.slice(16, i).trim() || "N/A";
-
-      if (data.cashPosText?.includes("cashflow positive"))
-        cashData = 'Positive '+ (data.cashPosText?.slice(i+2).trim() || "N/A");
-
+      let cashData = parseCashPosText(data.cashPosText);
 
       await this.client.sendTickerMessage(
         t.d[0],
@@ -176,8 +172,7 @@ marketType=13
     console.log(newTickers.length);
     await Promise.allSettled(promises);
 
-    
-    this.#previousMarket = marketType
+    this.#previousMarket = marketType;
     await setTimeout(this.config.refreshTime);
   }
 
@@ -186,10 +181,10 @@ marketType=13
     for (const ticker of justFetchedTickers) {
       const { s, d } = ticker;
 
-      console.log(d[0])
+      console.log(d[0]);
       const priceChange = d[marketType];
 
-      console.log(priceChange)
+      console.log(priceChange);
       let header, priceCompareValue;
 
       if (priceChange >= 15 && priceChange < 30) {

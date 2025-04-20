@@ -7,7 +7,7 @@ exports.parseTickerData = (data) => {
   const parsedYahooData = parseYahooData(yahooData);
 
   let historicalText = `${subHeader} Historical O/S & Potential Dilution ${subHeader}\n${
-    dilutionData?.historicalText ?? "N/A"
+    dilutionData?.historicalText.split("calculated using")[0] ?? "N/A"
   }`;
 
   !dilutionData?.historicalText &&
@@ -141,8 +141,8 @@ function parseYahooData(yahooData) {
     ? `${roundOffAndConverToPercent(
         defaultKeyStatistics.heldPercentInsiders
       )} ${
-        defaultKeyStatistics.heldPercentInsiders > 0.81
-          ? "🔴 'Must be below 80%'"
+        defaultKeyStatistics.heldPercentInsiders > 0.95
+          ? "🔴 'Must be below 95%'"
           : " 🟢"
       }`
     : "N/A";
@@ -151,7 +151,7 @@ function parseYahooData(yahooData) {
     ? `${roundOffAndConverToPercent(
         defaultKeyStatistics.heldPercentInstitutions
       )} ${
-        defaultKeyStatistics.heldPercentInstitutions > 0.51
+        defaultKeyStatistics.heldPercentInstitutions > 0.5
           ? "🔴 'Must be below 50%'"
           : " 🟢"
       }`
@@ -245,20 +245,26 @@ function getExchangeName(exchange) {
 
 exports.parseCash = (dilutionData) => {
   const cashPos = dilutionData?.cashPosText
-    ? `${subHeader} Cash Position ${subHeader}\n${dilutionData.cashPosText}\n\n`
+    ? `${subHeader} Cash Position ${subHeader}\n${this.parseCashPosText(dilutionData.cashPosText)}\n\n`
     : "";
   return cashPos;
 };
 
 exports.parseRawFactors = (dilutionData) => {
-  // const emojiMap = { Low: "🟢", High: "🔴", Medium: "🟡" };
+  const emojiMap = { Low: "🟢", High: "🔴", Medium: "🟡" };
 
   const factors = dilutionData?.rawFactorsContentArray
     ? dilutionData.rawFactorsContentArray.reduce(
-        (acc, cur) => `${acc}${cur.title}: ${cur.text}\n`,
+        (acc, cur) => `${acc}${cur.title}: ${emojiMap[cur.text]}\n`,
         ""
       )
     : "N/A";
+  // const factors = dilutionData?.rawFactorsContentArray
+  //   ? dilutionData.rawFactorsContentArray.reduce(
+  //       (acc, cur) => `${acc}${cur.title}: ${cur.text}\n`,
+  //       ""
+  //     )
+  //   : "N/A";
   return `${subHeader} Dilution  ${subHeader}\n${factors}`;
 };
 
@@ -269,4 +275,17 @@ exports.parseInstOwnData = (dilutionData) => {
     str = `${dilutionData.instOwnData?.totalInstOwnPct || "N/A"}%\n\n`;
 
   return `${subHeader} Inst Own  ${subHeader}: ${str}`;
+};
+
+exports.parseCashPosText = (cashPosText) => {
+  const i = cashPosText?.indexOf("of");
+  let cashData = "N/A";
+
+  if (cashPosText?.includes("cash left"))
+    cashData = cashPosText?.slice(16, i).trim() || "N/A";
+
+  if (cashPosText?.includes("cashflow positive"))
+    cashData = "Positive " + (cashPosText?.slice(i + 2).trim() || "N/A");
+
+  return cashData;
 };
