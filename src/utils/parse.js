@@ -25,9 +25,9 @@ exports.parseTickerData = (data) => {
           )
       : "N/A";
 
-  const shortInterest =
-    this.parseShortInterest(dilutionData?.shortInterestData) || "N/A\n\n";
-
+  const shortInterest = this.parseShortInterest(
+    dilutionData?.shortInterestData
+  );
   const text = `# ${ticker}\n${getYahooString(
     parsedYahooData
   )}\n\n${header} DILUTION TRACKER\n${historicalText}\n\n${this.parseCash(
@@ -273,7 +273,7 @@ exports.parseCashPosText = (cashPosText) => {
 };
 
 exports.parseShortInterest = (shortInterestData) => {
-  if (!shortInterestData) return;
+  if (!shortInterestData) return "N/A\n";
   const {
     shortInterestAsPercentOfFloat,
     releasedDaysAgo,
@@ -288,7 +288,7 @@ exports.parseShortInterest = (shortInterestData) => {
   if (numberedInterest < 10) emoji = "🟢";
   if (numberedInterest > 20) emoji = "🔴";
   if (numberedInterest >= 10 && numberedInterest <= 20) emoji = "🟡";
-  const shortInterest = `${shortInterestAsPercentOfFloat}% ${emoji} as of ${settlementDate} settlement date and published on ${releaseDate}\n-# Last Updated: ${releasedDaysAgo} days ago\n\n`;
+  const shortInterest = `${shortInterestAsPercentOfFloat}% ${emoji} as of ${settlementDate} settlement date and published on ${releaseDate}\n-# Last Updated: ${releasedDaysAgo} days ago\n`;
 
   return shortInterest;
 };
