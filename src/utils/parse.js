@@ -219,7 +219,7 @@ function getExchangeName(exchange) {
 
 exports.parseCash = (dilutionData) => {
   const cashPos = dilutionData?.cashPosText
-    ? `${subHeader} Cash Position ${subHeader}:${this.parseCashPosText(dilutionData.cashPosText)}\n`
+    ? `${subHeader} Cash Position ${subHeader}: ${this.parseCashPosText(dilutionData.cashPosText)}\n`
     : "N/A\n";
   return cashPos;
 };
@@ -229,7 +229,7 @@ exports.parseRawFactors = (dilutionData) => {
 
   const factors = dilutionData?.rawFactorsContentArray
     ? dilutionData.rawFactorsContentArray.reduce(
-        (acc, cur) => `> ${acc}${cur.title}: ${emojiMap[cur.text]}\n`,
+        (acc, cur) => `${acc}> ${cur.title}: ${emojiMap[cur.text]}\n`,
         ""
       )
     : "N/A\n";
