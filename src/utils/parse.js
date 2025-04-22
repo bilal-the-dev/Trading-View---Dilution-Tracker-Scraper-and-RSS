@@ -30,11 +30,11 @@ exports.parseTickerData = (data) => {
   );
   const text = `# ${ticker}\n${getYahooString(
     parsedYahooData
-  )}\n\n${header} DILUTION\n${historicalText}\n\n${this.parseCash(
+  )}\n\n${header} DILUTION\n${historicalText}\n${this.parseRawFactors(dilutionData)}${this.parseCash(
     dilutionData
   )}${subHeader} Short Interest ${subHeader}: ${shortInterest}${this.parseInstOwnData(
     dilutionData
-  )}**Float**: ${dilutionData.float ? dilutionData.float?.latestFloat + "M" : "N/A"}\n\n${this.parseRawFactors(dilutionData)}\n${getQuarterlyString(
+  )}**Float**: ${dilutionData.float ? dilutionData.float?.latestFloat + "M" : "N/A"}\n\n\n${getQuarterlyString(
     parsedYahooData
   )}\n${header} NEWS\n${parsedNews}\n${ticker}`;
 
@@ -219,27 +219,27 @@ function getExchangeName(exchange) {
 
 exports.parseCash = (dilutionData) => {
   const cashPos = dilutionData?.cashPosText
-    ? `${subHeader} Cash Position ${subHeader}\n${this.parseCashPosText(dilutionData.cashPosText)}\n\n`
-    : "";
+    ? `${subHeader} Cash Position ${subHeader}:${this.parseCashPosText(dilutionData.cashPosText)}\n`
+    : "N/A\n";
   return cashPos;
 };
 
 exports.parseRawFactors = (dilutionData) => {
-  const emojiMap = { Low: "🟢", High: "🔴", Medium: "🟠", "N/A": "N/A" }; // N/A for default
+  const emojiMap = { Low: "🔴", High: "🟢", Medium: "🟠", "N/A": "N/A" }; // N/A for default
 
   const factors = dilutionData?.rawFactorsContentArray
     ? dilutionData.rawFactorsContentArray.reduce(
-        (acc, cur) => `${acc}${cur.title}: ${emojiMap[cur.text]}\n`,
+        (acc, cur) => `> ${acc}${cur.title}: ${emojiMap[cur.text]}\n`,
         ""
       )
-    : "N/A";
+    : "N/A\n";
   // const factors = dilutionData?.rawFactorsContentArray
   //   ? dilutionData.rawFactorsContentArray.reduce(
   //       (acc, cur) => `${acc}${cur.title}: ${cur.text}\n`,
   //       ""
   //     )
   //   : "N/A";
-  return `${subHeader} Dilution  ${subHeader}\n${factors}`;
+  return `> ${subHeader} Dilution  ${subHeader}\n${factors}`;
 };
 
 exports.parseInstOwnData = (dilutionData) => {
