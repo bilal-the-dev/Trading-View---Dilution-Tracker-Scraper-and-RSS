@@ -167,7 +167,7 @@ class TradingView {
     });
 
     console.log(newTickers.length);
-    await Promise.allSettled(promises);
+    await Promise.all(promises);
 
     this.#previousMarket = marketType;
     await setTimeout(this.config.refreshTime);
