@@ -1,3 +1,4 @@
+require("./database/tables"); // to create db and tables
 const { IntentsBitField, Partials } = require("discord.js");
 const ExtendedClient = require("./client/Client");
 

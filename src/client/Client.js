@@ -51,7 +51,6 @@ class ExtendedClient extends Client {
 
     // Starting their functions
     this.dilutionTracker.start();
-    this.tradingView.start();
     this.tickerFecther.startFetching();
   }
 
@@ -63,6 +62,7 @@ class ExtendedClient extends Client {
 
       // Inititating managers that need to run when client is ready
       this.haltManager.start();
+      this.tradingView.start(); // to send logs message thats why put in ready
       this.bans.start();
       new WOK({
         client: readyClient,
@@ -124,9 +124,11 @@ class ExtendedClient extends Client {
   async sendTickerMessage(ticker, description, channelId) {
     const channel = this.channels.cache.get(channelId);
 
+    const row = getButtonRow(ticker);
+
     const data = {
       embeds: [generateEmbed({ description })],
-      components: [getButtonRow(ticker)],
+      ...(row && { components: row }),
     };
 
     await channel.send(data);

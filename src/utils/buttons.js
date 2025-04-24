@@ -1,6 +1,7 @@
 const { ButtonBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
 
 exports.getButtonRow = (ticker) => {
+  if (!ticker) return; // for compatibiltity with logs sending , no buttons
   const analyzeBtn = new ButtonBuilder()
     .setEmoji("🔎")
     .setLabel("Analyze")

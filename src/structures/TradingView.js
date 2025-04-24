@@ -11,11 +11,12 @@ const {
   parseShortInterest,
   parseInstOwnData,
 } = require("../utils/parse");
+const { getTVSession, setTVSession } = require("../database/queries");
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.tz.setDefault("Canada/Eastern");
-// let retries = 0;
+let retries = 0;
 
 const {
   OPEN_MARKET_CONFIG,
@@ -26,12 +27,9 @@ const {
   TV_EMAIL,
   TV_URL,
   USER_AGENT,
-  TV_SESSION_ID,
-  TV_SESSION_ID_SIGN_IN,
 } = process.env;
 
 class TradingView {
-  #cookie = ` sessionid=${TV_SESSION_ID}; sessionid_sign=${TV_SESSION_ID_SIGN_IN}`;
   #username;
   #started;
   #tickers = [];
@@ -70,7 +68,10 @@ class TradingView {
 
     if (!body) return await setTimeout(this.config.afterMarketTimeout);
 
-    // await this.isLoggedIn();
+    const TV_DATA = await getTVSession();
+
+    const cookie = this.formatSessionToCookie(TV_DATA);
+
     const res = await fetch(
       "https://scanner.tradingview.com/america/scan?label-product=screener-stock",
       this.getHeaders({
@@ -80,18 +81,12 @@ class TradingView {
         body,
         method: "POST",
         cookie: `cookiePrivacyPreferenceBannerProduction=notApplicable; cookiesSettings={"analytics":true,"advertising":true};${
-          this.#cookie
+          cookie
         }`,
       })
     );
 
-    let data;
-
-    if (res.headers.get("content-type").includes("application/json"))
-      data = await res.json();
-
-    if (res.headers.get("content-type").includes("text"))
-      data = await res.text();
+    const data = await this.parseResponse(res);
 
     if (!res.ok) {
       console.log(res);
@@ -214,9 +209,12 @@ class TradingView {
   async start() {
     if (SHOULD_RUN_TV === "false")
       return console.log("Did not start TV manager");
+
     if (this.#started) return;
+
     this.#started = true;
-    // await this.login();
+
+    await this.isLoggedIn();
 
     this.refreshTickerCache();
     this.keepCheckingCookie();
@@ -231,7 +229,7 @@ class TradingView {
   }
 
   async keepCheckingCookie() {
-    cron.schedule("0 0 * * *", async () => {
+    cron.schedule("*/10 * * * *", async () => {
       console.log("Checking if cookie is valid!");
 
       await this.isLoggedIn().catch(console.error);
@@ -254,82 +252,91 @@ class TradingView {
       })
     );
 
-    console.log(
-      this.getHeaders({
-        method: "POST",
-        contentType:
-          "multipart/form-data; boundary=----WebKitFormBoundarydW3ebpGipqyIwBKz",
-        referrer:
-          "pricing/?source=header_go_pro_button&feature=start_free_trial",
-        mode: "same-origin",
-        body: `------WebKitFormBoundarydW3ebpGipqyIwBKz\r\nContent-Disposition: form-data; name="username"\r\n\r\n${TV_EMAIL}\r\n------WebKitFormBoundarydW3ebpGipqyIwBKz\r\nContent-Disposition: form-data; name="password"\r\n\r\n${TV_PASSWORD}\r\n------WebKitFormBoundarydW3ebpGipqyIwBKz\r\nContent-Disposition: form-data; name="remember"\r\n\r\ntrue\r\n------WebKitFormBoundarydW3ebpGipqyIwBKz--\r\n`,
-      })
-    );
+    const data = await this.parseResponse(res);
 
-    const data = await res.json();
-    console.log(data);
-
-    if (
-      !res.ok ||
-      data?.error !==
-        "Please confirm that you are not a robot by clicking the captcha box."
-    ) {
+    if (!res.ok || data?.error) {
       console.log(res);
       console.log(data);
-      throw new Error(res.statusText);
+      return false;
     }
 
+    console.log(res);
+    console.log(data);
     const unparsedCookie = res.headers.get("set-cookie");
 
-    this.#cookie = `sessionid=${this.parseCookie(
+    const sessionId = this.parseCookie(unparsedCookie, "sessionid=");
+    const sessionid_signin = this.parseCookie(
       unparsedCookie,
-      "sessionid="
-    )}; sessionid_sign=${this.parseCookie(unparsedCookie, "sessionid_sign=")}`;
+      "sessionid_sign="
+    );
+
     this.#username = data.user?.username;
 
-    console.log(
-      `Login Success (${this.#username}), cookie fetched ${this.#cookie}`
-    );
+    console.log(`Login Success (${this.#username})`);
+
+    await setTVSession(sessionId, sessionid_signin);
+
+    return true;
   }
 
   async isLoggedIn() {
-    const res = await fetch(
-      `${TV_URL}/notifications-settings/values/?widget_type=user`,
-      this.getHeaders({
-        cookie: `cookiePrivacyPreferenceBannerProduction=notApplicable; cookiesSettings={"analytics":true,"advertising":true};${
-          this.#cookie
-        }`,
-        referrer: ``,
-        contentType: "application/json",
-        mode: "cors",
-      })
-    );
+    const TV_DATA = await getTVSession();
 
-    console.log(res);
-    const data = await res.json();
-    console.log(data);
+    let isLoggedIn;
 
-    if (res.ok) return;
+    if (TV_DATA) {
+      const cookie = this.formatSessionToCookie(TV_DATA);
 
-    const desc = `\`\`\`json\n${JSON.stringify(data)}\`\`\``;
+      const res = await fetch(
+        `https://pricealerts.tradingview.com/list_alerts?log_username=quadstradinghjf8i&maintenance_unset_reason=initial_operated&user_id=90035776`,
+        this.getHeaders({
+          cookie: `cookiePrivacyPreferenceBannerProduction=notApplicable; cookiesSettings={"analytics":true,"advertising":true};${
+            cookie
+          }`,
+          referrer: ``,
+          mode: "cors",
+        })
+      );
 
-    // if (res.status === 403) {
-    console.log("Cookie expired!");
-    await this.client.sendTickerMessage("test", desc, TRADING_VIEW_CHANNEL_ID);
+      const data = await this.parseResponse(res);
 
-    // if (retries >= 3)
-    //   throw new Error("Login retires finished, not trying anymore!");
+      console.log(res);
+      console.log(data);
 
-    // retries++;
-    // await this.login();
-    // }
+      if (data.s === "ok") isLoggedIn = true;
+    }
 
-    // if (!res.ok) {
-    //   console.log(res);
-    //   console.log(await res.json());
+    if (!isLoggedIn) {
+      await this.client.sendTickerMessage(
+        null, // no ticker
+        `Cookie Expired - Login Attempt #${retries + 1} (Max Retries = 2)`,
+        process.env.LOGS_CHANNEL_ID
+      );
+      // handle the login code here
 
-    //   throw new Error(res.statusText);
-    // }
+      const result = await this.login();
+
+      let text;
+      retries++;
+
+      if (result) {
+        text = `Successfully logged in On TV`;
+        retries = 0; // reset retries for next cycle of login if cookie expires while bot is running
+      }
+
+      if (!result) text = `Encountered error while logging in - Check logs!`;
+
+      await this.client.sendTickerMessage(
+        null, // no ticker
+        text,
+        process.env.LOGS_CHANNEL_ID
+      );
+
+      if (retries < 2 && !result) {
+        // we just try two times
+        await isLoggedIn();
+      }
+    }
   }
 
   refreshTickerCache() {
@@ -340,8 +347,22 @@ class TradingView {
     });
   }
 
+  async parseResponse(res) {
+    let data;
+
+    if (res.headers.get("content-type")?.includes("application/json"))
+      data = await res.json();
+
+    if (res.headers.get("content-type")?.includes("text"))
+      data = await res.text();
+
+    if (!data) data = await res.json();
+
+    return data;
+  }
+
   parseCookie(string, name) {
-    return string.split(name).join("").split(";")[0];
+    return string.split(name)[1].split(";")[0];
   }
 
   getHeaders({ contentType, body, method, referrer, mode, cookie }) {
@@ -368,6 +389,10 @@ class TradingView {
       body,
       method,
     };
+  }
+
+  formatSessionToCookie(sessionData) {
+    return ` sessionid=${sessionData.session_id}; sessionid_sign=${sessionData.session_id_sign_in}`;
   }
 }
 

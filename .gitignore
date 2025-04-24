@@ -3,3 +3,4 @@ node_modules
 dilution.js
 dilution.css
 *.png
+database.db
