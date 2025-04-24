@@ -128,7 +128,7 @@ class ExtendedClient extends Client {
 
     const data = {
       embeds: [generateEmbed({ description })],
-      ...(row && { components: row }),
+      ...(row && { components: [row] }),
     };
 
     await channel.send(data);
