@@ -141,7 +141,8 @@ class TradingView {
           break;
 
         default:
-          throw new Error(`Invalid ticker symbol: ${t}`);
+          spacing = "\u2800".repeat(4);
+          finalSpacing = [`${spacing} `, `\u2006${spacing}`];
       }
 
       const data = await this.client.dilutionTracker.scrapeTickerInfo(t.d[0], {
