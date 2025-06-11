@@ -87,7 +87,13 @@ class DilutionTracker {
 
   async scrapeTickerInfo(
     ticker,
-    { fetchNews, fetchShortInterest, fetchfloat, fetchOsShares } = {
+    {
+      fetchNews,
+      fetchShortInterest,
+      fetchfloat,
+      fetchOsShares,
+      fetchMarketCap,
+    } = {
       fetchNews: true,
       fetchShortInterest: true,
       fetchfloat: true,
@@ -98,7 +104,7 @@ class DilutionTracker {
 
     const page = await this.browser.newPage();
 
-    let shortInterestData, instOwnData, float, osShares;
+    let shortInterestData, instOwnData, float, osShares, marketCap;
     let news = [];
 
     await this.setDefaultHeaders(page);
@@ -152,6 +158,12 @@ class DilutionTracker {
 
       if (response.url().endsWith(`/getFloat?ticker=${ticker}`) && fetchfloat)
         float = await response.json().catch(console.error);
+
+      if (
+        response.url().endsWith(`/getMarketCap?ticker=${ticker}`) &&
+        fetchMarketCap
+      )
+        marketCap = await response.json().catch(console.error);
 
       if (
         response.url().endsWith(`/getSharesOS?ticker=${ticker}`) &&
@@ -222,7 +234,15 @@ class DilutionTracker {
 
     await page.close();
 
-    return { ...data, shortInterestData, instOwnData, float, osShares, news };
+    return {
+      ...data,
+      shortInterestData,
+      instOwnData,
+      float,
+      osShares,
+      marketCap,
+      news,
+    };
   }
 
   async start() {

@@ -151,6 +151,7 @@ class TradingView {
         fetchNews: false,
         fetchShortInterest: true,
         fetchfloat: true,
+        fetchMarketCap: true,
       });
 
       const shortInterest = parseShortInterest(data.shortInterestData);
@@ -163,7 +164,9 @@ class TradingView {
         t.d[0],
         `# ${finalSpacing[0] + t.d[0] + finalSpacing[1]}\n\n${
           t.header
-        }\n\n**Float**: ${
+        }\n\n**Market Cap**: ${
+          data.marketCap?.marketCap ?? "N/A"
+        }\n**Float**: ${
           data.float ? data.float.latestFloat + "M" : "N/A"
         }\n${parseInstOwnData(
           data
