@@ -103,7 +103,8 @@ class TradingView {
       this.#tickers = this.filterNewTickers(data.data, marketType);
       console.log(this.#tickers);
 
-      if (isNewMarket) this.client.dilutionTracker.login(); // so browser doesnt disconnect for being idle
+      if (isNewMarket && this.#previousMarket)
+        this.client.dilutionTracker.login(); // so browser doesnt disconnect for being idle, also prevMarket would be undefine on startup so it doesnt open the browser twice
 
       this.#previousMarket = marketType;
       return;
