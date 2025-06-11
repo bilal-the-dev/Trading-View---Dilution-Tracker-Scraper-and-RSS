@@ -11,6 +11,7 @@ const {
   parseShortInterest,
   parseInstOwnData,
   parseDilutionFloat,
+  parseDilutionCap,
 } = require("../utils/parse");
 const { getTVSession, setTVSession } = require("../database/queries");
 
@@ -165,9 +166,9 @@ class TradingView {
         t.d[0],
         `# ${finalSpacing[0] + t.d[0] + finalSpacing[1]}\n\n${
           t.header
-        }\n\n**Market Cap**: ${
-          data.marketCap?.marketCap ?? "N/A"
-        }\n${parseDilutionFloat(data)}${parseInstOwnData(
+        }\n\n${parseDilutionCap(data)}${parseDilutionFloat(
+          data
+        )}${parseInstOwnData(
           data,
           true // add emoji
         )}**SI**: ${shortInterest}**Cash Position**: ${cashData}\n${factors}**Activity day before**: Manual Check\n**Above/Touch CMP:** Manual Check\n**Entry Price Above $1.50:** Manual Check`,

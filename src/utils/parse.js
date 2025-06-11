@@ -330,3 +330,32 @@ exports.parseDilutionFloat = (dilutionData) => {
   }
   return `**Float**: ${str}\n`;
 };
+
+exports.parseDilutionCap = (dilutionData) => {
+  let str = "N/A";
+
+  if (dilutionData.marketCap) {
+    let emoji;
+
+    const { marketCap } = dilutionData.marketCap;
+
+    const loweredCap = marketCap.toLowerCase();
+
+    let splitter;
+    if (loweredCap.includes("m")) splitter = "m";
+    if (loweredCap.includes("b")) emoji = "🔴";
+
+    let numberedCap;
+
+    if (splitter) {
+      numberedCap = Number(loweredCap.split(splitter)[0]);
+
+      if (numberedCap < 10) emoji = "🟢";
+      if (numberedCap < 100) emoji = "🟡";
+      if (numberedCap > 100) emoji = "🔴";
+    }
+
+    str = `${marketCap} ${emoji || ""}`;
+  }
+  return `**Market Cap**: ${str}\n`;
+};
