@@ -30,11 +30,15 @@ exports.parseTickerData = (data) => {
   );
   const text = `# ${ticker}\n${getYahooString(
     parsedYahooData
-  )}\n\n${header} DILUTION\n${historicalText}\n${this.parseRawFactors(dilutionData)}${this.parseCash(
+  )}\n\n${header} DILUTION\n${historicalText}\n${this.parseRawFactors(
+    dilutionData
+  )}${this.parseCash(
     dilutionData
   )}${subHeader} Short Interest ${subHeader}: ${shortInterest}${this.parseInstOwnData(
     dilutionData
-  )}**Float**: ${dilutionData.float ? dilutionData.float?.latestFloat + "M" : "N/A"}\n\n\n${getQuarterlyString(
+  )}**Float**: ${
+    dilutionData.float ? dilutionData.float?.latestFloat + "M" : "N/A"
+  }\n\n\n${getQuarterlyString(
     parsedYahooData
   )}\n${header} NEWS\n${parsedNews}\n${ticker}`;
 
@@ -62,9 +66,9 @@ function getYahooString(yahooData) {
     yahooData.freeCashflow ?? "N/A"
   }\n52-Week Change: ${
     yahooData["52WeekChange"] ?? "N/A"
-  }\n\nInstitutional Ownership: ${yahooData.instituion ?? "N/A"}\nInsider Ownership: ${
-    yahooData.insiders ?? "N/A"
-  }\nFloat Shares: ${
+  }\n\nInstitutional Ownership: ${
+    yahooData.instituion ?? "N/A"
+  }\nInsider Ownership: ${yahooData.insiders ?? "N/A"}\nFloat Shares: ${
     yahooData.floatShares ?? "N/A"
   }\nTrailing EPS: ${yahooData.trailingEps ?? "N/A"}`;
 
@@ -219,7 +223,9 @@ function getExchangeName(exchange) {
 
 exports.parseCash = (dilutionData) => {
   const cashPos = dilutionData?.cashPosText
-    ? `${subHeader} Cash Position ${subHeader}: ${this.parseCashPosText(dilutionData.cashPosText)}\n`
+    ? `${subHeader} Cash Position ${subHeader}: ${this.parseCashPosText(
+        dilutionData.cashPosText
+      )}\n`
     : "N/A\n";
   return cashPos;
 };
@@ -242,26 +248,48 @@ exports.parseRawFactors = (dilutionData) => {
   return `> ${subHeader} Dilution  ${subHeader}\n${factors}`;
 };
 
-exports.parseInstOwnData = (dilutionData) => {
+exports.parseInstOwnData = (dilutionData, addEmoji) => {
   let str = "N/A\n";
 
-  if (dilutionData?.instOwnData)
-    str = `${dilutionData.instOwnData?.totalInstOwnPct || "N/A"}%\n`;
+  if (dilutionData?.instOwnData) {
+    const { totalInstOwnPct } = dilutionData.instOwnData;
+    let emoji;
+
+    if (addEmoji) {
+      if (totalInstOwnPct < 50) emoji = "🟢";
+      if (totalInstOwnPct >= 50) emoji = "🔴";
+    }
+
+    str = `${totalInstOwnPct || "N/A"}%${emoji ? ` ${emoji}` : ""}\n`;
+  }
 
   return `${subHeader} Inst Own  ${subHeader}: ${str}`;
 };
 
-exports.parseCashPosText = (cashPosText) => {
+exports.parseCashPosText = (cashPosText, addEmoji) => {
+  let emoji;
+
   const i = cashPosText?.indexOf("of");
   let cashData = "N/A";
 
-  if (cashPosText?.includes("cash left"))
+  if (cashPosText?.includes("cash left")) {
     cashData = cashPosText?.slice(16, i).trim() || "N/A";
 
-  if (cashPosText?.includes("cashflow positive"))
+    const numberedMonths = Number(cashData.split(" ")[0]);
+
+    if (addEmoji) {
+      if (numberedMonths < 30) emoji = "🟢";
+      if (numberedMonths >= 30) emoji = "🔴";
+    }
+  }
+
+  if (cashPosText?.includes("cashflow positive")) {
     cashData = "Positive " + (cashPosText?.slice(i + 2).trim() || "N/A");
 
-  return cashData;
+    if (addEmoji) emoji = "🔴🔴";
+  }
+
+  return `${cashData}${emoji ? ` ${emoji}` : ""}`;
 };
 
 exports.parseShortInterest = (shortInterestData) => {
@@ -284,4 +312,21 @@ exports.parseShortInterest = (shortInterestData) => {
   // const shortInterest = `${shortInterestAsPercentOfFloat}% ${emoji} as of ${settlementDate} settlement date and published on ${releaseDate}\n-# Last Updated: ${releasedDaysAgo} days ago\n`;
 
   return shortInterest;
+};
+
+exports.parseDilutionFloat = (dilutionData) => {
+  let str = "N/A";
+
+  if (dilutionData.float) {
+    let emoji;
+
+    const floatAmount = dilutionData.float.latestFloat;
+
+    if (floatAmount < 1) emoji = "🔴";
+    if (floatAmount <= 1.5) emoji = "🟡";
+    if (floatAmount > 1.5) emoji = "🟢";
+
+    str = `${floatAmount + "M" + ` ${emoji}`}`;
+  }
+  return `**Float**: ${str}\n`;
 };

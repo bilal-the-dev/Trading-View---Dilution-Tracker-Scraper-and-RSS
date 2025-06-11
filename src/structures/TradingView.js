@@ -10,6 +10,7 @@ const {
   parseCashPosText,
   parseShortInterest,
   parseInstOwnData,
+  parseDilutionFloat,
 } = require("../utils/parse");
 const { getTVSession, setTVSession } = require("../database/queries");
 
@@ -158,7 +159,7 @@ class TradingView {
 
       const factors = parseRawFactors(data);
 
-      let cashData = parseCashPosText(data.cashPosText);
+      let cashData = parseCashPosText(data.cashPosText, true); // add emoji
 
       await this.client.sendTickerMessage(
         t.d[0],
@@ -166,10 +167,9 @@ class TradingView {
           t.header
         }\n\n**Market Cap**: ${
           data.marketCap?.marketCap ?? "N/A"
-        }\n**Float**: ${
-          data.float ? data.float.latestFloat + "M" : "N/A"
-        }\n${parseInstOwnData(
-          data
+        }\n${parseDilutionFloat(data)}${parseInstOwnData(
+          data,
+          true // add emoji
         )}**SI**: ${shortInterest}**Cash Position**: ${cashData}\n${factors}**Activity day before**: Manual Check\n**Above/Touch CMP:** Manual Check\n**Entry Price Above $1.50:** Manual Check`,
         TRADING_VIEW_CHANNEL_ID
       );
