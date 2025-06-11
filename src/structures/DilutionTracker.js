@@ -38,7 +38,7 @@ class DilutionTracker {
         "Did not open browser for dilution due to config in .env"
       );
 
-    if (this.browser?.isConnected()) await browser.close();
+    if (this.browser?.isConnected()) await this.browser.close();
 
     console.log("Opening the browser for logging in to dilution tracker");
 
