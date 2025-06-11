@@ -38,22 +38,25 @@ class DilutionTracker {
         "Did not open browser for dilution due to config in .env"
       );
 
+    if (this.browser?.isConnected()) await browser.close();
+
     console.log("Opening the browser for logging in to dilution tracker");
 
     const startTime = new Date();
 
     const browser = await puppeteer.launch(this.options);
 
-    browser.on('disconnected', () => {
-    const disconnectTime = new Date();
-    console.log(`🔴 Browser disconnected at: ${disconnectTime.toISOString()}`);
-    console.log(`🕒 Uptime: ${(disconnectTime.getTime() - startTime.getTime()) / 1000}s`);
-  });
+    browser.on("disconnected", () => {
+      const disconnectTime = new Date();
+      console.log(
+        `🔴 Browser disconnected at: ${disconnectTime.toISOString()}`
+      );
+      console.log(
+        `🕒 Uptime: ${(disconnectTime.getTime() - startTime.getTime()) / 1000}s`
+      );
+    });
 
-    console.log('Launched browser')
-
-    
-
+    console.log("Launched browser");
 
     this.browser = browser;
     const page = await browser.newPage();

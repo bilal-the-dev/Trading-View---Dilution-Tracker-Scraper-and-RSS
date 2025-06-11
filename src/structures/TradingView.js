@@ -80,9 +80,7 @@ class TradingView {
         contentType: "text/plain;charset=UTF-8",
         body,
         method: "POST",
-        cookie: `cookiePrivacyPreferenceBannerProduction=notApplicable; cookiesSettings={"analytics":true,"advertising":true};${
-          cookie
-        }`,
+        cookie: `cookiePrivacyPreferenceBannerProduction=notApplicable; cookiesSettings={"analytics":true,"advertising":true};${cookie}`,
       })
     );
 
@@ -98,11 +96,14 @@ class TradingView {
       throw new Error(res.statusText);
     }
 
-    if (!this.#tickers.length || marketType !== this.#previousMarket) {
+    const isNewMarket = marketType !== this.#previousMarket;
+    if (!this.#tickers.length || isNewMarket) {
       console.log("Trading View: first time adding to cache OR new market");
 
       this.#tickers = this.filterNewTickers(data.data, marketType);
       console.log(this.#tickers);
+
+      if (isNewMarket) this.client.dilutionTracker.login(); // so browser doesnt disconnect for being idle
 
       this.#previousMarket = marketType;
       return;
@@ -161,7 +162,11 @@ class TradingView {
         t.d[0],
         `# ${finalSpacing[0] + t.d[0] + finalSpacing[1]}\n\n${
           t.header
-        }\n\n**SI**: ${shortInterest}${parseInstOwnData(data)}**Float**: ${data.float ? data.float.latestFloat + "M" : "N/A"}\n${factors}**Cash Position**: ${cashData}`,
+        }\n\n**Float**: ${
+          data.float ? data.float.latestFloat + "M" : "N/A"
+        }\n${parseInstOwnData(
+          data
+        )}**SI**: ${shortInterest}**Cash Position**: ${cashData}\n${factors}**Activity day before**: Manual Check\n**Above/Touch CMP:** Manual Check\n**Entry Price Above $1.50:** Manual Check`,
         TRADING_VIEW_CHANNEL_ID
       );
       this.#tickers.push(t);
@@ -291,9 +296,7 @@ class TradingView {
       const res = await fetch(
         `https://pricealerts.tradingview.com/list_alerts?log_username=quadstradinghjf8i&maintenance_unset_reason=initial_operated&user_id=90035776`,
         this.getHeaders({
-          cookie: `cookiePrivacyPreferenceBannerProduction=notApplicable; cookiesSettings={"analytics":true,"advertising":true};${
-            cookie
-          }`,
+          cookie: `cookiePrivacyPreferenceBannerProduction=notApplicable; cookiesSettings={"analytics":true,"advertising":true};${cookie}`,
           referrer: ``,
           mode: "cors",
         })
