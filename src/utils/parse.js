@@ -345,13 +345,11 @@ exports.parseDilutionCap = (dilutionData) => {
     if (loweredCap.includes("m")) splitter = "m";
     if (loweredCap.includes("b")) emoji = "🔴";
 
-    let numberedCap;
-
     if (splitter) {
-      numberedCap = Number(loweredCap.split(splitter)[0]);
+      const numberedCap = Number(loweredCap.split(splitter)[0]);
 
       if (numberedCap < 10) emoji = "🟢";
-      if (numberedCap < 100) emoji = "🟡";
+      if (numberedCap < 100 && numberedCap >= 10) emoji = "🟡";
       if (numberedCap > 100) emoji = "🔴";
     }
 
