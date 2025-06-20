@@ -100,16 +100,20 @@ class TradingView {
 
     const isNewMarket = marketType !== this.#previousMarket;
     if (!this.#tickers.length || isNewMarket) {
-      console.log("Trading View: first time adding to cache OR new market");
-
-      this.#tickers = this.filterNewTickers(data.data, marketType);
-      console.log(this.#tickers);
-
       if (isNewMarket && this.#previousMarket)
-        this.client.dilutionTracker.login(); // so browser doesnt disconnect for being idle, also prevMarket would be undefine on startup so it doesnt open the browser twice
+        await this.client.dilutionTracker.login(); // so browser doesnt disconnect for being idle, also prevMarket would be undefine on startup so it doesnt open the browser twice
 
       this.#previousMarket = marketType;
-      return;
+      if (marketType === 12) {
+        console.log("Trading View: first time adding to cache OR new market");
+
+        this.#tickers = this.filterNewTickers(data.data, marketType);
+        console.log(this.#tickers);
+        return;
+      } else {
+        this.#tickers = []; // for 4 am market, dont return rather send all tickers
+        console.log("4am tickers! Sending all!");
+      }
     }
 
     // console.log(this.#tickers);
