@@ -32,7 +32,7 @@ exports.parseTickerData = (data) => {
   const shortInterest = this.parseShortInterest(
     dilutionData?.shortInterestData
   );
-  const text = `# ${ticker}-# This Information might not be accurate, do your own diligence!\n\n${parsCompanyProfile(
+  const text = `# ${ticker}\n-# This Information might not be accurate, do your own diligence!\n\n${parsCompanyProfile(
     dilutionData
   )}${this.parseDilutionCap(dilutionData)}${this.parseInstOwnData(
     dilutionData
