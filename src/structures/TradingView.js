@@ -7,7 +7,6 @@ const utc = require("dayjs/plugin/utc");
 const timezone = require("dayjs/plugin/timezone");
 const {
   parseRawFactors,
-  parseCashPosText,
   parseShortInterest,
   parseInstOwnData,
   parseDilutionFloat,
@@ -164,8 +163,6 @@ class TradingView {
 
       const factors = parseRawFactors(data);
 
-      let cashData = parseCashPosText(data.cashPosText, true); // add emoji
-
       await this.client.sendTickerMessage(
         t.d[0],
         `# ${finalSpacing[0] + t.d[0] + finalSpacing[1]}\n\n${
@@ -173,9 +170,8 @@ class TradingView {
         }\n\n${parseDilutionCap(data)}${parseDilutionFloat(
           data
         )}${parseInstOwnData(
-          data,
-          true // add emoji
-        )}**SI**: ${shortInterest}**Cash Position**: ${cashData}\n${factors}**Activity day before**: Manual Check\n**Above/Touch CMP:** Manual Check\n**Entry Price Above $1.50:** Manual Check`,
+          data
+        )}**SI**: ${shortInterest}${factors}**Activity day before**: Manual Check\n**Above/Touch CMP:** Manual Check\n**Entry Price Above $1.50:** Manual Check`,
         TRADING_VIEW_CHANNEL_ID
       );
       this.#tickers.push(t);

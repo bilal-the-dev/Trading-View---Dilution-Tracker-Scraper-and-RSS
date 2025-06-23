@@ -261,19 +261,19 @@
 // s();
 // // abc();
 
-async function checkSqlite() {
-  const sqlite3 = require("sqlite3");
-  const { open } = require("sqlite");
+// async function checkSqlite() {
+//   const sqlite3 = require("sqlite3");
+//   const { open } = require("sqlite");
 
-  const db = await open({
-    filename: "./database.db",
-    driver: sqlite3.Database,
-  });
+//   const db = await open({
+//     filename: "./database.db",
+//     driver: sqlite3.Database,
+//   });
 
-  const r = await db.get("SELECT * FROM TV_DATA;");
+//   const r = await db.get("SELECT * FROM TV_DATA;");
 
-  console.log(r);
-}
+//   console.log(r);
+// }
 
 async function checkTVCookie() {
   const body = process.env.PRE_MARKET_CONFIG;

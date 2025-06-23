@@ -24,7 +24,7 @@ const rawFactors = [
   { title: "Offering", selector: "drOfferingAbilityRatingIcon" },
   { title: "Overhead", selector: "drDilAmtRatingIcon" },
   { title: "Historical", selector: "drHistRatingIcon" },
-  { title: "Cash", selector: "drCashNeedRatingIcon" },
+  // { title: "Cash", selector: "drCashNeedRatingIcon" },
 ];
 
 class DilutionTracker {
@@ -93,10 +93,13 @@ class DilutionTracker {
       fetchfloat,
       fetchOsShares,
       fetchMarketCap,
+      fetchCompanyProfile,
     } = {
       fetchNews: true,
       fetchShortInterest: true,
       fetchfloat: true,
+      fetchMarketCap: true,
+      fetchCompanyProfile: true,
     }
   ) {
     if (!this.isLoggedIn)
@@ -104,7 +107,12 @@ class DilutionTracker {
 
     const page = await this.browser.newPage();
 
-    let shortInterestData, instOwnData, float, osShares, marketCap;
+    let shortInterestData,
+      instOwnData,
+      float,
+      osShares,
+      marketCap,
+      companyProfile;
     let news = [];
 
     await this.setDefaultHeaders(page);
@@ -170,6 +178,12 @@ class DilutionTracker {
         fetchOsShares
       )
         osShares = await response.json().catch(console.error);
+
+      if (
+        response.url().endsWith(`/getCompanyProfile?ticker=${ticker}`) &&
+        fetchCompanyProfile
+      )
+        companyProfile = await response.json().catch(console.error);
     });
 
     await page.goto(`${DILUTION_TRACKER_URL}/app/search/${ticker}`, {
@@ -241,6 +255,7 @@ class DilutionTracker {
       float,
       osShares,
       marketCap,
+      companyProfile,
       news,
     };
   }

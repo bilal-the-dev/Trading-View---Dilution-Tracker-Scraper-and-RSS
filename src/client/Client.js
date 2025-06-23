@@ -9,7 +9,6 @@ const { DilutionTracker } = require("../structures/DilutionTracker");
 const TickerFetcher = require("../structures/TickerFetcher");
 const { parseTickerData } = require("../utils/parse");
 const HaltManager = require("../structures/HaltManager");
-const YahooAPI = require("../structures/YahooAPI");
 const { generateEmbed } = require("../utils/embeds");
 const { getButtonRow } = require("../utils/buttons");
 const TradingView = require("../structures/TradingView");
@@ -98,18 +97,22 @@ class ExtendedClient extends Client {
 
   async fetchInfoAboutTicker(
     ticker,
-    { withYahoo, withDilution } = {
+    {
+      withDilution,
+      // withYahoo,
+    } = {
       withYahoo: true,
       withDilution: true,
     }
   ) {
-    let dilutionData, yahooData;
+    let dilutionData;
+    // yahooData;
 
-    if (withYahoo) {
-      const yahooManager = new YahooAPI(ticker);
-      yahooData = await yahooManager.getTickerData();
-      yahooData.quarterlyIncome = await yahooManager.getQuarterlyIncome();
-    }
+    // if (withYahoo) {
+    //   const yahooManager = new YahooAPI(ticker);
+    //   yahooData = await yahooManager.getTickerData();
+    //   yahooData.quarterlyIncome = await yahooManager.getQuarterlyIncome();
+    // }
 
     if (withDilution)
       dilutionData = await this.dilutionTracker.scrapeTickerInfo(ticker);
@@ -117,7 +120,7 @@ class ExtendedClient extends Client {
     return parseTickerData({
       ticker,
       dilutionData,
-      yahooData,
+      // yahooData,
     });
   }
 
