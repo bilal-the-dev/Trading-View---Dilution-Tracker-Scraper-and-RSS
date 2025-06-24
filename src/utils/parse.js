@@ -47,8 +47,8 @@ exports.parseTickerData = (data) => {
 
 function parsCompanyProfile(dilutionData) {
   const str = `**Country**: ${
-    dilutionData.companyProfile.country || "N/A"
-  }\n**Exchange**: ${dilutionData.companyProfile.exchange || "N/A"}\n`;
+    dilutionData.companyProfile?.country || "N/A"
+  }\n**Exchange**: ${dilutionData.companyProfile?.exchange || "N/A"}\n`;
 
   return str;
 }
