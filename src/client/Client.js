@@ -49,20 +49,21 @@ class ExtendedClient extends Client {
     this.bans = new BanManager(this);
 
     // Starting their functions
-    this.dilutionTracker.start();
     this.tickerFecther.startFetching();
   }
 
   #registerReady() {
-    this.on(Events.ClientReady, (readyClient) => {
+    this.on(Events.ClientReady, async (readyClient) => {
       console.log(
         `${readyClient.user.username} (${readyClient.user.id}) is ready!`
       );
 
       // Inititating managers that need to run when client is ready
       this.haltManager.start();
-      this.tradingView.start(); // to send logs message thats why put in ready
       this.bans.start();
+      await this.tradingView.start(); // to send logs message thats why put in ready
+      this.dilutionTracker.start(); // put this after trading view so 4am tickers should not go on startup and thats why put await on TV
+
       new WOK({
         client: readyClient,
         commandsDir: path.join(__dirname, "..", "commands"),

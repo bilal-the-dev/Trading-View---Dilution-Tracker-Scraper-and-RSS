@@ -105,12 +105,18 @@ class TradingView {
 
       this.#previousMarket = marketType;
 
-      if (isNewMarket && this.#previousMarket && marketType === 13) {
-        // so it doesnt run this on bot startup
-        this.#tickers = []; // for 4 am market, dont return rather send all tickers
+      if (isNewMarket && marketType === 13) {
+        this.#tickers = [];
+
+        if (!this.client.dilutionTracker.isLoggedIn())
+          return console.log(
+            "Seems like bot was restarted, pre market was open so not sending all 4am tickers on startup"
+          );
+
+        // for 4 am market, dont return rather send all tickers
         console.log("4am tickers! Sending all!");
       } else {
-        console.log("Trading View: first time adding to cache OR new market");
+        console.log("Trading View: adding to cache OR new market");
 
         this.#tickers = this.filterNewTickers(data.data, marketType);
         console.log(this.#tickers);

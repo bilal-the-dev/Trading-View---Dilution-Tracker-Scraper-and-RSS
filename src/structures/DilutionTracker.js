@@ -6,8 +6,8 @@ const fs = require("fs/promises");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 puppeteer.use(StealthPlugin());
 
-const JS_FILE = "bundle.b5bf677a06e2a4077dde.js";
-const CSS_FILE = "css.main.99943a6280f5c20dc93c.css";
+const JS_FILE = "bundle.c98d4aee747973917d34.js";
+const CSS_FILE = "css.main.fd85be2895ef1ede2f4e.css";
 
 const {
   DILUTION_TRACKER_EMAIL,
@@ -246,7 +246,7 @@ class DilutionTracker {
       await page.screenshot({ path: `ticker-news.png` });
     }
 
-    await page.close();
+    // await page.close();
 
     return {
       ...data,
