@@ -246,7 +246,7 @@ class DilutionTracker {
       await page.screenshot({ path: `ticker-news.png` });
     }
 
-    // await page.close();
+    await page.close();
 
     return {
       ...data,
