@@ -108,7 +108,7 @@ class TradingView {
       if (isNewMarket && marketType === 13) {
         this.#tickers = [];
 
-        if (!this.client.dilutionTracker.isLoggedIn())
+        if (!this.client.dilutionTracker.isLoggedIn)
           return console.log(
             "Seems like bot was restarted, pre market was open so not sending all 4am tickers on startup"
           );
