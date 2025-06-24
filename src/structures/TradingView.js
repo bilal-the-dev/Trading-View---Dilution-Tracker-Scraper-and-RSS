@@ -108,11 +108,18 @@ class TradingView {
       if (isNewMarket && marketType === 13) {
         this.#tickers = [];
 
-        if (!this.client.dilutionTracker.isLoggedIn)
+        // this logic because bot restarted and market type is 13, even if 4.30 (30mins after market) it'll send all tickers dont want that, just when the bot has been running since hours and 4am comes it'll send all tickers so good, hence not adding this.#previousMarket cond since bot can be restarted hours before 4am and it'll be undefined
+        if (process.uptime() < 60) {
+          console.log(
+            `Been ${process.uptime()} seconds since bot was ran, and market is pre`
+          );
+
+          this.#tickers = this.filterNewTickers(data.data, marketType);
+
           return console.log(
             "Seems like bot was restarted, pre market was open so not sending all 4am tickers on startup"
           );
-
+        }
         // for 4 am market, dont return rather send all tickers
         console.log("4am tickers! Sending all!");
       } else {
@@ -187,7 +194,10 @@ class TradingView {
     });
 
     console.log(newTickers.length);
-    await Promise.all(promises);
+
+    const result = await Promise.allSettled(promises);
+
+    result.filter((r) => r.status === "rejected").map(console.log);
 
     this.#previousMarket = marketType;
     await setTimeout(this.config.refreshTime);
