@@ -13,6 +13,8 @@ const {
   parseDilutionCap,
 } = require("../utils/parse");
 const { getTVSession, setTVSession } = require("../database/queries");
+const { MARKET_TYPES } = require("../utils/constants");
+const configFile = require("./../../config.json");
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -23,7 +25,6 @@ const {
   OPEN_MARKET_CONFIG,
   SHOULD_RUN_TV,
   PRE_MARKET_CONFIG,
-  TRADING_VIEW_CHANNEL_ID,
   TV_PASSWORD,
   TV_EMAIL,
   TV_URL,
@@ -55,12 +56,12 @@ class TradingView {
 
     if (now >= openMarketStart && now <= openMarketEnd) {
       body = OPEN_MARKET_CONFIG;
-      marketType = 12;
+      marketType = MARKET_TYPES.OPEN_MARKET;
     }
 
     if (now >= preMarketStart && now <= preMarketEnd) {
       body = PRE_MARKET_CONFIG;
-      marketType = 13;
+      marketType = MARKET_TYPES.PRE_MARKET;
     }
 
     console.log(`Market type: ${marketType}`);
@@ -104,9 +105,9 @@ class TradingView {
 
       this.#previousMarket = marketType;
 
-      if (marketType === 13) {
-        this.#tickers = [];
+      this.#tickers = []; // remove tickers of prev market, so they dont interfere with "filterNewTickers" when it loops over them and checks
 
+      if (marketType === MARKET_TYPES.PRE_MARKET) {
         // this logic because bot restarted and market type is 13, even if 4.30 (30mins after market) it'll send all tickers dont want that, just when the bot has been running since hours and 4am comes it'll send all tickers so good, hence not adding this.#previousMarket cond since bot can be restarted hours before 4am and it'll be undefined
         if (process.uptime() < 60) {
           console.log(
@@ -114,6 +115,7 @@ class TradingView {
           );
 
           this.#tickers = this.filterNewTickers(data.data, marketType);
+          console.log(this.#tickers);
 
           return console.log(
             "Seems like bot was restarted, pre market was open so not sending all 4am tickers on startup"
@@ -130,109 +132,121 @@ class TradingView {
       }
     }
 
-    // console.log(this.#tickers);
-    // console.log(arrayOfTickerNames);
     console.log(data.totalCount);
 
     const newTickers = this.filterNewTickers(data.data, marketType);
 
-    // console.log(newTickers);
+    const scrapeResults = await Promise.allSettled(
+      newTickers.map(async (t) => {
+        const scrapedData = await this.client.dilutionTracker.scrapeTickerInfo(
+          t.d[0],
+          {
+            fetchNews: false,
+            fetchShortInterest: true,
+            fetchfloat: true,
+            fetchMarketCap: true,
+          }
+        );
 
-    const promises = newTickers.map(async (t) => {
+        return { ...t, scrapedData };
+      })
+    );
+
+    const enrichedTickers = scrapeResults
+      .filter((r) => r.status === "fulfilled")
+      .map((r) => r.value);
+
+    scrapeResults
+      .filter((r) => r.status === "rejected")
+      .forEach((r) => console.error(r));
+
+    for (const t of enrichedTickers) {
+      const symbol = t.d[0];
+      const { scrapedData } = t;
+
       let spacing, finalSpacing;
-
-      switch (t.d[0].length) {
+      switch (symbol.length) {
         case 4:
           spacing = "\u2800".repeat(4);
           finalSpacing = [`${spacing} `, `\u2006${spacing}`];
           break;
-
         case 3:
           spacing = "\u2800".repeat(4);
           finalSpacing = [`${spacing}\u2002`, `\u2002${spacing}`];
           break;
-
         case 2:
           spacing = "\u2800".repeat(5);
           finalSpacing = [`${spacing}\u2006`, `\u2006${spacing}`];
           break;
-
         case 1:
           spacing = "\u2800".repeat(5);
           finalSpacing = [`${spacing}\u2002`, `\u2008${spacing}`];
           break;
-
         default:
           spacing = "\u2800".repeat(4);
           finalSpacing = [`${spacing} `, `\u2006${spacing}`];
       }
 
-      const data = await this.client.dilutionTracker.scrapeTickerInfo(t.d[0], {
-        fetchNews: false,
-        fetchShortInterest: true,
-        fetchfloat: true,
-        fetchMarketCap: true,
-      });
+      const shortInterest = parseShortInterest(scrapedData.shortInterestData);
+      const factors = parseRawFactors(scrapedData);
 
-      const shortInterest = parseShortInterest(data.shortInterestData);
+      for (const monitoredChange of t.types) {
+        const channelId = configFile.alertsChannelIds[monitoredChange.type];
 
-      const factors = parseRawFactors(data);
+        const header = `Stock pumped ${monitoredChange.targetChange}%`;
 
-      await this.client.sendTickerMessage(
-        t.d[0],
-        `# ${finalSpacing[0] + t.d[0] + finalSpacing[1]}\n\n${
-          t.header
-        }\n\n${parseDilutionCap(data)}${parseDilutionFloat(
-          data
+        const message = `# ${
+          finalSpacing[0] + symbol + finalSpacing[1]
+        }\n\n${header}\n\n${parseDilutionCap(scrapedData)}${parseDilutionFloat(
+          scrapedData
         )}${parseInstOwnData(
-          data
-        )}**SI**: ${shortInterest}${factors}**Activity day before**: Manual Check\n**Above/Touch CMP:** Manual Check\n**Entry Price Above $1.50:** Manual Check`,
-        TRADING_VIEW_CHANNEL_ID
-      );
+          scrapedData
+        )}**SI**: ${shortInterest}${factors}**Activity day before**: Manual Check\n**Above/Touch CMP:** Manual Check\n**Entry Price Above $1.50:** Manual Check`;
+
+        await this.client.sendTickerMessage(symbol, message, channelId);
+      }
+
+      t.scrapedData = null; // well so dont occupy memory much
       this.#tickers.push(t);
-    });
+    }
 
     console.log(newTickers.length);
 
-    const result = await Promise.allSettled(promises);
-
-    result.filter((r) => r.status === "rejected").map(console.log);
-
-    this.#previousMarket = marketType;
     await setTimeout(this.config.refreshTime);
   }
 
   filterNewTickers(justFetchedTickers, marketType) {
     const newFilteredTickers = [];
+    const monitoredChanges = [
+      { targetChange: 15, shouldBeLessThan: 30, type: "normal" },
+      { targetChange: 30, type: "normal" },
+      { targetChange: 40, type: "vw1" },
+      { targetChange: 100, type: "vw2" },
+    ];
+
     for (const ticker of justFetchedTickers) {
-      const { s, d } = ticker;
+      console.log(ticker.s);
+      console.log(ticker.d[marketType]);
 
-      console.log(d[0]);
-      const priceChange = d[marketType];
+      ticker.types = [];
 
-      console.log(priceChange);
-      let header, priceCompareValue;
+      monitoredChanges.forEach((monitorChange) => {
+        const pumpedTicker = this.returnTickerIfPumped(
+          ticker,
+          marketType,
+          monitorChange
+        );
 
-      if (priceChange >= 15 && priceChange < 30) {
-        header = "Stock pumped 15%";
-        priceCompareValue = 15;
-      }
-      if (priceChange >= 30) {
-        header = "Stock pumped 30%";
-        priceCompareValue = 30;
-      }
+        if (!pumpedTicker) return;
 
-      if (!header) continue;
+        ticker.types.push(monitorChange);
+      });
 
-      const tickerAlreadyFound = this.#tickers.find(
-        (t) => t.s === s && t.d[marketType] >= priceCompareValue
-      );
+      if (!ticker.types.length) continue; // no match for 15/30/40/100
 
-      if (tickerAlreadyFound) continue;
-
-      ticker.header = header;
       newFilteredTickers.push(ticker);
     }
+
     return newFilteredTickers;
   }
   async start() {
@@ -386,6 +400,26 @@ class TradingView {
     if (!data) data = await res.json();
 
     return data;
+  }
+
+  returnTickerIfPumped(ticker, marketType, monitorChange) {
+    const { s, d } = ticker; // s contains name
+    const priceChange = d[marketType];
+    const { targetChange, shouldBeLessThan } = monitorChange;
+
+    if (priceChange < targetChange) return; // check if ticker pumped 15,30/40/100
+
+    if (shouldBeLessThan && priceChange >= shouldBeLessThan) return; // in case of 15, if change is 35 it wont proceed rather will go to next iteration (30)
+
+    const tickerAlreadyFound = this.#tickers.find(
+      (t) => t.s === s && t.d[marketType] >= targetChange
+    ); // check if a ticker sent already with pump of 15,30/40/100
+
+    if (tickerAlreadyFound) return;
+
+    // no ticker sent, means it pumped a certain percent first time
+
+    return ticker;
   }
 
   parseCookie(string, name) {

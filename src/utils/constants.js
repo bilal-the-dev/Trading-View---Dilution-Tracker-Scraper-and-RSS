@@ -1,0 +1,4 @@
+exports.MARKET_TYPES = {
+  PRE_MARKET: 13,
+  OPEN_MARKET: 12,
+};
