@@ -221,7 +221,7 @@ class TradingView {
       { targetChange: 15, shouldBeLessThan: 30, type: "normal" },
       { targetChange: 30, type: "normal" },
       { targetChange: 40, type: "vw1" },
-      { targetChange: 100, type: "vw2" },
+      { targetChange: 100, type: "vw2", marketType: MARKET_TYPES.PRE_MARKET },
     ];
 
     for (const ticker of justFetchedTickers) {
@@ -406,6 +406,9 @@ class TradingView {
     const { s, d } = ticker; // s contains name
     const priceChange = d[marketType];
     const { targetChange, shouldBeLessThan } = monitorChange;
+
+    if (monitorChange.marketType && monitorChange.marketType !== marketType)
+      return; // for vw2, only pre market
 
     if (priceChange < targetChange) return; // check if ticker pumped 15,30/40/100
 
