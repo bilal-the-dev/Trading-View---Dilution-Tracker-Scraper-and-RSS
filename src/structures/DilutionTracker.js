@@ -69,17 +69,26 @@ class DilutionTracker {
 
     console.log("Entering email and password");
 
-    await page.screenshot({ path: `./screenshots/beforeTyping.png` });
+    await page.screenshot({
+      path: `./screenshots/beforeTyping.png`,
+      fullPage: true,
+    });
     await page.type("input#email", DILUTION_TRACKER_EMAIL);
     await page.type("input#password", DILUTION_TRACKER_PASS);
 
-    await page.screenshot({ path: `./screenshots/afterTyping.png` });
+    await page.screenshot({
+      path: `./screenshots/afterTyping.png`,
+      fullPage: true,
+    });
     const button = await page.$("button");
     await button.click();
 
     console.log("Clicked Sign-in");
 
-    await page.screenshot({ path: `./screenshots/signInClick.png` });
+    await page.screenshot({
+      path: `./screenshots/signInClick.png`,
+      fullPage: true,
+    });
     await page.waitForSelector("svg#dash_settings_icon");
 
     console.log("Logged In!!!");
