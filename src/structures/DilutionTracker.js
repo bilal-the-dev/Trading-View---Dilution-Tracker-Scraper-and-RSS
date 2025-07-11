@@ -69,9 +69,11 @@ class DilutionTracker {
 
     console.log("Entering email and password");
 
+    await page.screenshot({ path: `./screenshots/beforeTyping.png` });
     await page.type("input#email", DILUTION_TRACKER_EMAIL);
     await page.type("input#password", DILUTION_TRACKER_PASS);
 
+    await page.screenshot({ path: `./screenshots/afterTyping.png` });
     const button = await page.$("button");
     await button.click();
 
