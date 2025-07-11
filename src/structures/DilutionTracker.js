@@ -63,6 +63,52 @@ class DilutionTracker {
 
     await this.setDefaultHeaders(page);
     await this.setUserAgent(page);
+
+    page.on("request", (request) => {
+      console.log("➡️ Request:", {
+        url: request.url(),
+        method: request.method(),
+        headers: request.headers(),
+        postData: request.postData(),
+      });
+    });
+
+    page.on("response", async (response) => {
+      const request = response.request();
+      const url = response.url();
+      const contentType = response.headers()["content-type"] || "";
+
+      let responseBody = null;
+
+      try {
+        if (contentType.includes("application/json")) {
+          const text = await response.text();
+          responseBody = JSON.parse(text);
+
+          console.log("⬅️ JSON Response:", {
+            url,
+            status: response.status(),
+            method: request.method(),
+            json: responseBody,
+          });
+        } else {
+          // Optional: log non-JSON response summary
+          const text = await response.text();
+          console.log("⬅️ Non-JSON Response:", {
+            url,
+            status: response.status(),
+            method: request.method(),
+            snippet: text.substring(0, 300),
+          });
+        }
+      } catch (error) {
+        console.log({
+          url,
+          error: error,
+        });
+      }
+    });
+
     await page.goto(DILUTION_TRACKER_URL + "/login", {
       waitUntil: "networkidle2",
     });
