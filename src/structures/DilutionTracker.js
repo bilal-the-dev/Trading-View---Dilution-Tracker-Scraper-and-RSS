@@ -61,10 +61,10 @@ class DilutionTracker {
     this.browser = browser;
     const page = await browser.newPage();
 
-    await page.setViewport({
-      width: 1920,
-      height: 1080,
-    });
+    // await page.setViewport({
+    //   width: 1920,
+    //   height: 1080,
+    // });
     await this.setDefaultHeaders(page);
     await this.setUserAgent(page);
 
@@ -131,8 +131,6 @@ class DilutionTracker {
       fullPage: true,
     });
     const button = await page.$("button");
-
-    console.log(button);
 
     await button.click();
 
