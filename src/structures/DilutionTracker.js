@@ -77,6 +77,7 @@ class DilutionTracker {
 
     console.log("Clicked Sign-in");
 
+    await page.screenshot({ path: `./screenshots/signInClick.png` });
     await page.waitForSelector("svg#dash_settings_icon");
 
     console.log("Logged In!!!");
