@@ -61,57 +61,53 @@ class DilutionTracker {
     this.browser = browser;
     const page = await browser.newPage();
 
-    // await page.setViewport({
-    //   width: 1920,
-    //   height: 1080,
-    // });
     await this.setDefaultHeaders(page);
-    await this.setUserAgent(page);
+    await this.setOtherDefaults(page);
 
-    page.on("request", (request) => {
-      console.log("➡️ Request:", {
-        url: request.url(),
-        method: request.method(),
-        headers: request.headers(),
-        postData: request.postData(),
-      });
-    });
+    // page.on("request", (request) => {
+    //   console.log("➡️ Request:", {
+    //     url: request.url(),
+    //     method: request.method(),
+    //     headers: request.headers(),
+    //     postData: request.postData(),
+    //   });
+    // });
 
-    page.on("response", async (response) => {
-      const request = response.request();
-      const url = response.url();
-      const contentType = response.headers()["content-type"] || "";
+    // page.on("response", async (response) => {
+    //   const request = response.request();
+    //   const url = response.url();
+    //   const contentType = response.headers()["content-type"] || "";
 
-      let responseBody = null;
+    //   let responseBody = null;
 
-      try {
-        if (contentType.includes("application/json")) {
-          const text = await response.text();
-          responseBody = JSON.parse(text);
+    //   try {
+    //     if (contentType.includes("application/json")) {
+    //       const text = await response.text();
+    //       responseBody = JSON.parse(text);
 
-          console.log("⬅️ JSON Response:", {
-            url,
-            status: response.status(),
-            method: request.method(),
-            json: responseBody,
-          });
-        } else {
-          // Optional: log non-JSON response summary
-          const text = await response.text();
-          console.log("⬅️ Non-JSON Response:", {
-            url,
-            status: response.status(),
-            method: request.method(),
-            snippet: text.substring(0, 300),
-          });
-        }
-      } catch (error) {
-        console.log({
-          url,
-          error: error,
-        });
-      }
-    });
+    //       console.log("⬅️ JSON Response:", {
+    //         url,
+    //         status: response.status(),
+    //         method: request.method(),
+    //         json: responseBody,
+    //       });
+    //     } else {
+    //       // Optional: log non-JSON response summary
+    //       const text = await response.text();
+    //       console.log("⬅️ Non-JSON Response:", {
+    //         url,
+    //         status: response.status(),
+    //         method: request.method(),
+    //         snippet: text.substring(0, 300),
+    //       });
+    //     }
+    //   } catch (error) {
+    //     console.log({
+    //       url,
+    //       error: error,
+    //     });
+    //   }
+    // });
 
     await page.goto(DILUTION_TRACKER_URL + "/login", {
       waitUntil: "networkidle2",
@@ -179,7 +175,7 @@ class DilutionTracker {
     let news = [];
 
     await this.setDefaultHeaders(page);
-    await this.setUserAgent(page);
+    await this.setOtherDefaults(page);
 
     await page.setCacheEnabled(false);
     await page.setRequestInterception(true);
@@ -384,7 +380,12 @@ class DilutionTracker {
     return res.json();
   }
 
-  async setUserAgent(page) {
+  async setOtherDefaults(page) {
+    await page.setViewport({
+      width: 1920,
+      height: 1080,
+    });
+
     await page.setUserAgent(USER_AGENT);
   }
 
