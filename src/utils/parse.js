@@ -166,7 +166,7 @@ exports.parseDilutionFloat = (dilutionData) => {
 exports.parseDilutionCap = (dilutionData) => {
   let str = "N/A";
 
-  if (dilutionData.marketCap) {
+  if (dilutionData.marketCap?.marketCap) { // sometimes the marketcap inside object is undefined
     let emoji;
 
     const { marketCap } = dilutionData.marketCap;
