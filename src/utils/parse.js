@@ -95,7 +95,7 @@ exports.parseRawFactors = (dilutionData, isScanner) => {
         if (isScanner && cur.removeInScanner) return acc;
         return `${acc}> ${cur.title}: ${emojiMap[cur.text]}${
           isDoubleRed && cur.doubleRedCircle ? emojiMap[cur.text] : ""
-        }${isScanner && cur.title === "N/A" ? "🔴🔴" : ""}\n`;
+        }${isScanner && cur.text === "N/A" ? "🔴🔴" : " "}\n`;
       }, "")
     : "N/A\n";
 
@@ -148,7 +148,7 @@ exports.parseCashPosText = (cashPosText) => {
     emoji = "🔴🔴";
   }
 
-  return `${cashData} ${emoji}`;
+  return `${cashData} ${emoji ?? ""}`;
 };
 
 exports.parseShortInterest = (shortInterestData) => {
