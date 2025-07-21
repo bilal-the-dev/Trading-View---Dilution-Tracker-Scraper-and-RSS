@@ -20,14 +20,14 @@ const {
 } = process.env;
 
 const rawFactors = [
-  { title: "Risk", selector: "drOverallRatingIcon" },
+  { title: "Risk", selector: "drOverallRatingIcon", removeInScanner: true },
   {
     title: "Offering",
     selector: "drOfferingAbilityRatingIcon",
     doubleRedCircle: true,
   },
   { title: "Overhead", selector: "drDilAmtRatingIcon", doubleRedCircle: true },
-  { title: "Historical", selector: "drHistRatingIcon" },
+  { title: "Historical", selector: "drHistRatingIcon", removeInScanner: true },
   // { title: "Cash", selector: "drCashNeedRatingIcon" },
 ];
 

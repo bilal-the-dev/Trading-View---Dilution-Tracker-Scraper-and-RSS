@@ -76,17 +76,19 @@ exports.parseCash = (dilutionData) => {
   return cashPos;
 };
 
-exports.parseRawFactors = (dilutionData) => {
+exports.parseRawFactors = (dilutionData, isScanner) => {
   const emojiMap = { Low: "🔴", High: "🟢", Medium: "🟠", "N/A": "N/A" }; // N/A for default
 
+  const isDoubleRed = dilutionData?.rawFactorsContentArray?.every(
+    (r) => r.text === "Low"
+  );
   let factors = dilutionData?.rawFactorsContentArray
-    ? dilutionData.rawFactorsContentArray.reduce(
-        (acc, cur) =>
-          `${acc}> ${cur.title}: ${emojiMap[cur.text]}${
-            cur.text === "Low" && cur.doubleRedCircle ? emojiMap[cur.text] : ""
-          }\n`,
-        ""
-      )
+    ? dilutionData.rawFactorsContentArray.reduce((acc, cur) => {
+        if (isScanner && cur.removeInScanner) return acc;
+        return `${acc}> ${cur.title}: ${emojiMap[cur.text]}${
+          isDoubleRed && cur.doubleRedCircle ? emojiMap[cur.text] : ""
+        }\n`;
+      }, "")
     : "N/A\n";
 
   factors += `> Cash Position: ${this.parseCashPosText(
