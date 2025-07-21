@@ -44,7 +44,7 @@ exports.parseTickerData = async (data) => {
     dilutionData
   )}${subHeader} Short Interest ${subHeader}: ${shortInterest}\n${header} DILUTION\n${historicalText}\n${this.parseRawFactors(
     dilutionData
-  )}${news}${ticker}`;
+  )}${news}\n\n${ticker}`;
 
   return text;
 };
