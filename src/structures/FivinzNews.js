@@ -9,7 +9,7 @@ class FivinzNews {
 
     if (!response.ok) return "Some error occured";
 
-    const data = await response.json();
+    const data = await response.text();
 
     const $ = cheerio.load(data);
 
