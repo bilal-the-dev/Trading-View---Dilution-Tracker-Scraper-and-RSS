@@ -154,9 +154,8 @@ exports.parseShortInterest = (shortInterestData) => {
 
   const numberedInterest = Number(shortInterestAsPercentOfFloat);
 
-  if (numberedInterest < 10) emoji = "🟢";
-  if (numberedInterest > 20) emoji = "🔴";
-  if (numberedInterest >= 10 && numberedInterest <= 20) emoji = "🟡";
+  if (numberedInterest < 30) emoji = "🟢";
+  if (numberedInterest >= 30) emoji = "🔴🔴";
   const shortInterest = `${shortInterestAsPercentOfFloat}% ${emoji}\n`;
   // const shortInterest = `${shortInterestAsPercentOfFloat}% ${emoji} as of ${settlementDate} settlement date and published on ${releaseDate}\n-# Last Updated: ${releasedDaysAgo} days ago\n`;
 
@@ -167,15 +166,15 @@ exports.parseDilutionFloat = (dilutionData) => {
   let str = "N/A";
 
   if (dilutionData.float) {
-    let emoji;
+    // let emoji;
 
     const floatAmount = dilutionData.float.latestFloat;
 
-    if (floatAmount < 1) emoji = "🔴";
-    if (floatAmount <= 1.5) emoji = "🟡";
-    if (floatAmount > 1.5) emoji = "🟢";
+    // if (floatAmount < 1) emoji = "🔴";
+    // if (floatAmount <= 1.5) emoji = "🟡";
+    // if (floatAmount > 1.5) emoji = "🟢";
 
-    str = `${floatAmount + "M" + ` ${emoji}`}`;
+    str = `${floatAmount + "M"}`;
   }
   return `**Float**: ${str}\n`;
 };
@@ -198,9 +197,8 @@ exports.parseDilutionCap = (dilutionData) => {
     if (splitter) {
       const numberedCap = Number(loweredCap.split(splitter)[0]);
 
-      if (numberedCap < 10) emoji = "🟢";
-      if (numberedCap < 100 && numberedCap >= 10) emoji = "🟡";
-      if (numberedCap > 100) emoji = "🔴🔴";
+      if (numberedCap < 100) emoji = "🟢";
+      if (numberedCap >= 100) emoji = "🔴🔴";
     }
 
     str = `${marketCap} ${emoji || ""}`;
