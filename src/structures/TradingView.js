@@ -11,6 +11,7 @@ const {
   parseInstOwnData,
   parseDilutionFloat,
   parseDilutionCap,
+  parseDlutionNews,
 } = require("../utils/parse");
 const { getTVSession, setTVSession } = require("../database/queries");
 const { MARKET_TYPES } = require("../utils/constants");
@@ -141,7 +142,7 @@ class TradingView {
         const scrapedData = await this.client.dilutionTracker.scrapeTickerInfo(
           t.d[0],
           {
-            fetchNews: false,
+            fetchNews: true,
             fetchShortInterest: true,
             fetchfloat: true,
             fetchMarketCap: true,
@@ -201,7 +202,7 @@ class TradingView {
           scrapedData
         )}${parseInstOwnData(
           scrapedData
-        )}**SI**: ${shortInterest}${factors}**Activity day before**: Manual Check\n**Above/Touch CMP:** Manual Check\n**Entry Price Above $1.50:** Manual Check`;
+        )}**SI**: ${shortInterest}${factors}${parseDlutionNews(scrapedData)}`;
 
         await this.client.sendTickerMessage(symbol, message, channelId);
       }

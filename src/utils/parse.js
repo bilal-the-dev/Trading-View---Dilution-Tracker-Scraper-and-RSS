@@ -18,16 +18,16 @@ exports.parseTickerData = (data) => {
     !dilutionData?.cashPosText &&
     (historicalText = "It doesn't matter for this stock");
 
-  const parsedNews =
-    dilutionData?.news?.news?.length > 0
-      ? dilutionData.news.news
-          .slice(0, 2)
-          .reduce(
-            (acc, cur) =>
-              `${acc}[${cur.title}](https://dilution.news/${cur.id})\n-# ${cur.source?.name} ${cur.publishedAtDateTimeString}\n\n`,
-            ""
-          )
-      : "N/A";
+  // const parsedNews =
+  //   dilutionData?.news?.news?.length > 0
+  //     ? dilutionData.news.news
+  //         .slice(0, 1)
+  //         .reduce(
+  //           (acc, cur) =>
+  //             `${acc}[${cur.title}](https://dilution.news/${cur.id})\n-# ${cur.source?.name} ${cur.publishedAtDateTimeString}\n\n`,
+  //           ""
+  //         )
+  //     : "N/A";
 
   const shortInterest = this.parseShortInterest(
     dilutionData?.shortInterestData
@@ -40,7 +40,7 @@ exports.parseTickerData = (data) => {
     dilutionData
   )}${subHeader} Short Interest ${subHeader}: ${shortInterest}\n${header} DILUTION\n${historicalText}\n${this.parseRawFactors(
     dilutionData
-  )}\n${header} NEWS\n${parsedNews}\n${ticker}`;
+  )}${this.parseDlutionNews(dilutionData)}${ticker}`;
 
   return text;
 };
@@ -52,6 +52,20 @@ function parsCompanyProfile(dilutionData) {
 
   return str;
 }
+
+exports.parseDlutionNews = (dilutionData) => {
+  const parsedNews =
+    dilutionData?.news?.news?.length > 0
+      ? dilutionData.news.news
+          .slice(0, 1)
+          .reduce(
+            (acc, cur) =>
+              `${acc}[${cur.title}](https://dilution.news/${cur.id})\n-# ${cur.source?.name} ${cur.publishedAtDateTimeString}`,
+            ""
+          )
+      : "N/A";
+  return `\n${header} DILUTION NEWS\n${parsedNews}\n`;
+};
 
 exports.parseCash = (dilutionData) => {
   const cashPos = dilutionData?.cashPosText
@@ -67,7 +81,10 @@ exports.parseRawFactors = (dilutionData) => {
 
   let factors = dilutionData?.rawFactorsContentArray
     ? dilutionData.rawFactorsContentArray.reduce(
-        (acc, cur) => `${acc}> ${cur.title}: ${emojiMap[cur.text]}\n`,
+        (acc, cur) =>
+          `${acc}> ${cur.title}: ${emojiMap[cur.text]}${
+            cur.text === "Low" && cur.doubleRedCircle ? emojiMap[cur.text] : ""
+          }\n`,
         ""
       )
     : "N/A\n";
@@ -92,7 +109,7 @@ exports.parseInstOwnData = (dilutionData) => {
     let emoji;
 
     if (totalInstOwnPct < 50) emoji = "🟢";
-    if (totalInstOwnPct >= 50) emoji = "🔴";
+    if (totalInstOwnPct >= 50) emoji = "🔴🔴";
 
     str = `${totalInstOwnPct || "N/A"}% ${emoji}\n`;
   }
@@ -112,7 +129,7 @@ exports.parseCashPosText = (cashPosText) => {
     const numberedMonths = Number(cashData.split(" ")[0]);
 
     if (numberedMonths < 30) emoji = "🟢";
-    if (numberedMonths >= 30) emoji = "🔴";
+    if (numberedMonths >= 30) emoji = "🔴🔴";
   }
 
   if (cashPosText?.includes("cashflow positive")) {
@@ -166,7 +183,8 @@ exports.parseDilutionFloat = (dilutionData) => {
 exports.parseDilutionCap = (dilutionData) => {
   let str = "N/A";
 
-  if (dilutionData.marketCap?.marketCap) { // sometimes the marketcap inside object is undefined
+  if (dilutionData.marketCap?.marketCap) {
+    // sometimes the marketcap inside object is undefined
     let emoji;
 
     const { marketCap } = dilutionData.marketCap;
@@ -175,14 +193,14 @@ exports.parseDilutionCap = (dilutionData) => {
 
     let splitter;
     if (loweredCap.includes("m")) splitter = "m";
-    if (loweredCap.includes("b")) emoji = "🔴";
+    if (loweredCap.includes("b")) emoji = "🔴🔴";
 
     if (splitter) {
       const numberedCap = Number(loweredCap.split(splitter)[0]);
 
       if (numberedCap < 10) emoji = "🟢";
       if (numberedCap < 100 && numberedCap >= 10) emoji = "🟡";
-      if (numberedCap > 100) emoji = "🔴";
+      if (numberedCap > 100) emoji = "🔴🔴";
     }
 
     str = `${marketCap} ${emoji || ""}`;

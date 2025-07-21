@@ -21,8 +21,12 @@ const {
 
 const rawFactors = [
   { title: "Risk", selector: "drOverallRatingIcon" },
-  { title: "Offering", selector: "drOfferingAbilityRatingIcon" },
-  { title: "Overhead", selector: "drDilAmtRatingIcon" },
+  {
+    title: "Offering",
+    selector: "drOfferingAbilityRatingIcon",
+    doubleRedCircle: true,
+  },
+  { title: "Overhead", selector: "drDilAmtRatingIcon", doubleRedCircle: true },
   { title: "Historical", selector: "drHistRatingIcon" },
   // { title: "Cash", selector: "drCashNeedRatingIcon" },
 ];
@@ -260,7 +264,7 @@ class DilutionTracker {
           document.querySelector(`svg#${e.selector} + span`)?.innerText ||
           "N/A";
 
-        return { title: e.title, text };
+        return { title: e.title, text, doubleRedCircle: e.doubleRedCircle };
       });
 
       const historicalText = document.querySelector(
