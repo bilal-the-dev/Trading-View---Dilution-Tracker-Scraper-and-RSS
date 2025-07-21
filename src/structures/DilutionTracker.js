@@ -264,7 +264,12 @@ class DilutionTracker {
           document.querySelector(`svg#${e.selector} + span`)?.innerText ||
           "N/A";
 
-        return { title: e.title, text, doubleRedCircle: e.doubleRedCircle };
+        return {
+          title: e.title,
+          text,
+          doubleRedCircle: e.doubleRedCircle,
+          removeInScanner: e.removeInScanner,
+        };
       });
 
       const historicalText = document.querySelector(
