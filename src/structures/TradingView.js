@@ -189,7 +189,7 @@ class TradingView {
       }
 
       const shortInterest = parseShortInterest(scrapedData.shortInterestData);
-      const factors = parseRawFactors(scrapedData);
+      const factors = parseRawFactors(scrapedData, true);
 
       for (const monitoredChange of t.types) {
         const channelId = configFile.alertsChannelIds[monitoredChange.type];

@@ -39,8 +39,7 @@ exports.parseTickerData = (data) => {
   )}${this.parseDilutionFloat(
     dilutionData
   )}${subHeader} Short Interest ${subHeader}: ${shortInterest}\n${header} DILUTION\n${historicalText}\n${this.parseRawFactors(
-    dilutionData,
-    true // since this parse is called only in scanner
+    dilutionData
   )}${this.parseDlutionNews(dilutionData)}${ticker}`;
 
   return text;
@@ -88,7 +87,7 @@ exports.parseRawFactors = (dilutionData, isScanner) => {
         if (isScanner && cur.removeInScanner) return acc;
         return `${acc}> ${cur.title}: ${emojiMap[cur.text]}${
           isDoubleRed && cur.doubleRedCircle ? emojiMap[cur.text] : ""
-        }\n`;
+        }${isScanner && cur.title === "N/A" ? "🔴🔴" : ""}\n`;
       }, "")
     : "N/A\n";
 
