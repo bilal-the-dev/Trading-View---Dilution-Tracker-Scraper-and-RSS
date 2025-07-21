@@ -39,7 +39,8 @@ exports.parseTickerData = (data) => {
   )}${this.parseDilutionFloat(
     dilutionData
   )}${subHeader} Short Interest ${subHeader}: ${shortInterest}\n${header} DILUTION\n${historicalText}\n${this.parseRawFactors(
-    dilutionData
+    dilutionData,
+    true // since this parse is called only in scanner
   )}${this.parseDlutionNews(dilutionData)}${ticker}`;
 
   return text;
