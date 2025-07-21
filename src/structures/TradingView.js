@@ -11,7 +11,7 @@ const {
   parseInstOwnData,
   parseDilutionFloat,
   parseDilutionCap,
-  parseDlutionNews,
+  parseNews,
 } = require("../utils/parse");
 const { getTVSession, setTVSession } = require("../database/queries");
 const { MARKET_TYPES } = require("../utils/constants");
@@ -196,13 +196,14 @@ class TradingView {
 
         const header = `Stock pumped ${monitoredChange.targetChange}%`;
 
+        const news = await parseNews(scrapedData, symbol);
         const message = `# ${
           finalSpacing[0] + symbol + finalSpacing[1]
         }\n\n${header}\n\n${parseDilutionCap(scrapedData)}${parseDilutionFloat(
           scrapedData
         )}${parseInstOwnData(
           scrapedData
-        )}**SI**: ${shortInterest}${factors}${parseDlutionNews(scrapedData)}`;
+        )}**SI**: ${shortInterest}${factors}${news}`;
 
         await this.client.sendTickerMessage(symbol, message, channelId);
       }

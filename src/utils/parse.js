@@ -1,7 +1,9 @@
+const FivinzNews = require("../structures/FivinzNews");
+
 const header = "###";
 const subHeader = "**";
 
-exports.parseTickerData = (data) => {
+exports.parseTickerData = async (data) => {
   const {
     ticker,
     dilutionData,
@@ -32,6 +34,8 @@ exports.parseTickerData = (data) => {
   const shortInterest = this.parseShortInterest(
     dilutionData?.shortInterestData
   );
+
+  const news = await this.parseNews(dilutionData, ticker);
   const text = `# ${ticker}\n-# This Information might not be accurate, do your own diligence!\n\n${parsCompanyProfile(
     dilutionData
   )}${this.parseDilutionCap(dilutionData)}${this.parseInstOwnData(
@@ -40,7 +44,7 @@ exports.parseTickerData = (data) => {
     dilutionData
   )}${subHeader} Short Interest ${subHeader}: ${shortInterest}\n${header} DILUTION\n${historicalText}\n${this.parseRawFactors(
     dilutionData
-  )}${this.parseDlutionNews(dilutionData)}${ticker}`;
+  )}${news}${ticker}`;
 
   return text;
 };
@@ -53,7 +57,7 @@ function parsCompanyProfile(dilutionData) {
   return str;
 }
 
-exports.parseDlutionNews = (dilutionData) => {
+exports.parseNews = async (dilutionData, ticker) => {
   const parsedNews =
     dilutionData?.news?.news?.length > 0
       ? dilutionData.news.news
@@ -64,7 +68,11 @@ exports.parseDlutionNews = (dilutionData) => {
             ""
           )
       : "N/A";
-  return `\n${header} DILUTION NEWS\n${parsedNews}\n`;
+
+  const fivinzNews = await FivinzNews.fetchTickerNews(ticker);
+  return `\n${header} DILUTION NEWS\n${parsedNews}\n${header} FIVINZ NEWS\n${
+    fivinzNews || "N/A"
+  }`;
 };
 
 exports.parseCash = (dilutionData) => {
