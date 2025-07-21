@@ -27,7 +27,7 @@ class FivinzNews {
 
     const rightTextHtml = firstRow.find("div.news-link-right").text()?.trim();
 
-    return `[${title}}](${fullUrl})\n-# ${timestamp} ${rightTextHtml}`;
+    return `[${title}](${fullUrl})\n-# ${timestamp} ${rightTextHtml}`;
   }
 }
 
