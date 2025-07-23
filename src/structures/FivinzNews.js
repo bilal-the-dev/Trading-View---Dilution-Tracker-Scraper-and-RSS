@@ -27,7 +27,11 @@ class FivinzNews {
 
     const rightTextHtml = firstRow.find("div.news-link-right").text()?.trim();
 
-    return `[${title}](${fullUrl})\n-# ${timestamp} ${rightTextHtml}`;
+    let emoji = "";
+
+    if (title.toLowerCase().includes("placement")) emoji = "🟡 ";
+
+    return `${emoji}[${title}](${fullUrl})\n-# ${timestamp} ${rightTextHtml}`;
   }
 }
 

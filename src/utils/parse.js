@@ -64,7 +64,11 @@ exports.parseNews = async (dilutionData, ticker) => {
           .slice(0, 1)
           .reduce(
             (acc, cur) =>
-              `${acc}[${cur.title}](https://dilution.news/${cur.id})\n-# ${cur.source?.name} ${cur.publishedAtDateTimeString}`,
+              `${
+                cur.title.toLowerCase().includes("placement") ? "🟡 " : ""
+              }${acc}[${cur.title}](https://dilution.news/${cur.id})\n-# ${
+                cur.source?.name
+              } ${cur.publishedAtDateTimeString}`,
             ""
           )
       : "N/A";
@@ -88,14 +92,16 @@ exports.parseRawFactors = (dilutionData, isScanner) => {
   const emojiMap = { Low: "🔴", High: "🟢", Medium: "🟠", "N/A": "N/A" }; // N/A for default
 
   const isDoubleRed = dilutionData?.rawFactorsContentArray?.every(
-    (r) => r.text === "Low"
+    (r) => r.removeInScanner || r.text === "Low" // it'll always be true for historical and risk rest two if they are low
   );
   let factors = dilutionData?.rawFactorsContentArray
     ? dilutionData.rawFactorsContentArray.reduce((acc, cur) => {
-        if (isScanner && cur.removeInScanner) return acc;
+        if (isScanner && cur.removeInScanner) return acc; // in scanner, dont add risk, historical , in analyzer alwayys add all
         return `${acc}> ${cur.title}: ${emojiMap[cur.text]}${
-          isDoubleRed && cur.doubleRedCircle ? emojiMap[cur.text] : ""
-        }${isScanner && cur.text === "N/A" ? "🔴🔴" : " "}\n`;
+          isScanner && isDoubleRed && cur.doubleRedCircle // in scanner only and when other two are low it'll run
+            ? emojiMap[cur.text]
+            : ""
+        }${isScanner && cur.text === "N/A" ? "🔴🔴" : " "}\n`; // in scanner, when N/A comes add emoji
       }, "")
     : "N/A\n";
 
