@@ -102,35 +102,35 @@ class TradingView {
     const isNewMarket = marketType !== this.#previousMarket;
 
     if (isNewMarket) {
-      if (this.#previousMarket) await this.client.dilutionTracker.login(); // so browser doesnt disconnect for being idle, also prevMarket would be undefine on startup so it doesnt open the browser twice
+      if (this.#previousMarket) await this.client.dilutionTracker.login(); // so browser doesnt disconnect for being idle, also prevMarket would be undefined on startup so it doesnt open the browser twice
 
       this.#previousMarket = marketType;
 
       this.#tickers = []; // remove tickers of prev market, so they dont interfere with "filterNewTickers" when it loops over them and checks
 
-      if (marketType === MARKET_TYPES.PRE_MARKET) {
-        // this logic because bot restarted and market type is 13, even if 4.30 (30mins after market) it'll send all tickers dont want that, just when the bot has been running since hours and 4am comes it'll send all tickers so good, hence not adding this.#previousMarket cond since bot can be restarted hours before 4am and it'll be undefined
-        if (process.uptime() < 60) {
-          console.log(
-            `Been ${process.uptime()} seconds since bot was ran, and market is pre`
-          );
-
-          this.#tickers = this.filterNewTickers(data.data, marketType);
-          console.log(this.#tickers);
-
-          return console.log(
-            "Seems like bot was restarted, pre market was open so not sending all 4am tickers on startup"
-          );
-        }
-        // for 4 am market, dont return rather send all tickers
-        console.log("4am tickers! Sending all!");
-      } else {
-        console.log("Trading View: adding to cache OR new market");
+      // if (marketType === MARKET_TYPES.PRE_MARKET) {
+      // this logic because bot restarted and market type is 13, even if 4.30 (30mins after market) it'll send all tickers dont want that, just when the bot has been running since hours and 4am comes it'll send all tickers so good, hence not adding this.#previousMarket cond since bot can be restarted hours before 4am and it'll be undefined
+      if (process.uptime() < 60) {
+        console.log(
+          `Been ${process.uptime()} seconds since bot was ran, and market is pre`
+        );
 
         this.#tickers = this.filterNewTickers(data.data, marketType);
         console.log(this.#tickers);
-        return;
+
+        return console.log(
+          "Seems like bot was restarted, pre market was open so not sending all 4am tickers on startup"
+        );
       }
+      // for 4 am market, dont return rather send all tickers
+      console.log("New Market tickers! Sending all!");
+      // } else {
+      //   console.log("Trading View: adding to cache OR new market");
+
+      //   this.#tickers = this.filterNewTickers(data.data, marketType);
+      //   console.log(this.#tickers);
+      //   return;
+      // }
     }
 
     console.log(data.totalCount);
