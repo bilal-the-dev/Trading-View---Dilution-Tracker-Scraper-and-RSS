@@ -119,7 +119,7 @@ class TradingView {
         console.log(this.#tickers);
 
         return console.log(
-          "Seems like bot was restarted, pre market was open so not sending all 4am tickers on startup"
+          "Seems like bot was restarted,market was open so not sending tickers on startup"
         );
       }
       // for 4 am market, dont return rather send all tickers
