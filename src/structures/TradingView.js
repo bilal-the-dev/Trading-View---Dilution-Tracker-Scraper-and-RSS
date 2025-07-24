@@ -50,7 +50,7 @@ class TradingView {
       .set("minute", 30)
       .set("second", 0);
     const openMarketEnd = now.set("hour", 16).set("minute", 0).set("second", 0);
-    const preMarketStart = now.set("hour", 4).set("minute", 0).set("second", 0);
+    const preMarketStart = now.set("hour", 4).set("minute", 1).set("second", 0);
     const preMarketEnd = now.set("hour", 9).set("minute", 30).set("second", 0);
 
     let body, marketType;
@@ -108,9 +108,7 @@ class TradingView {
 
       // this logic because bot restarted and market type is 13, even if 4.30 (30mins after market) it'll send all tickers dont want that, just when the bot has been running since hours and 4am comes it'll send all tickers so good, hence not adding this.#previousMarket cond since bot can be restarted hours before 4am and it'll be undefined
       if (process.uptime() < 30) {
-        console.log(
-          `Been ${process.uptime()} seconds since bot was ran, and market is pre`
-        );
+        console.log(`Been ${process.uptime()} seconds since bot was ran`);
 
         this.#tickers = this.filterNewTickers(data.data, marketType);
         console.log(this.#tickers);
