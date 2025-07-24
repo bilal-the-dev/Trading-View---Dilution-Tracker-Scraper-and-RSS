@@ -106,11 +106,8 @@ class TradingView {
 
       this.#previousMarket = marketType;
 
-      this.#tickers = []; // remove tickers of prev market, so they dont interfere with "filterNewTickers" when it loops over them and checks
-
-      // if (marketType === MARKET_TYPES.PRE_MARKET) {
       // this logic because bot restarted and market type is 13, even if 4.30 (30mins after market) it'll send all tickers dont want that, just when the bot has been running since hours and 4am comes it'll send all tickers so good, hence not adding this.#previousMarket cond since bot can be restarted hours before 4am and it'll be undefined
-      if (process.uptime() < 60) {
+      if (process.uptime() < 30) {
         console.log(
           `Been ${process.uptime()} seconds since bot was ran, and market is pre`
         );
@@ -122,8 +119,15 @@ class TradingView {
           "Seems like bot was restarted,market was open so not sending tickers on startup"
         );
       }
+
+      if (marketType === MARKET_TYPES.PRE_MARKET) {
+        this.#tickers = []; // remove tickers of prev day
+      }
+
       // for 4 am market, dont return rather send all tickers
-      console.log("New Market tickers! Sending all!");
+      console.log(
+        "New Market tickers! Sending all! (some in case of open market"
+      );
       // } else {
       //   console.log("Trading View: adding to cache OR new market");
 
