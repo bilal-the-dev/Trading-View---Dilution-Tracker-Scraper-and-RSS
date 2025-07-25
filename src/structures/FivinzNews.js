@@ -23,7 +23,7 @@ class FivinzNews {
     const link = firstRow.find("a.tab-link-news");
     const title = link.text().trim();
     const href = link.attr("href");
-    const fullUrl = href ? `${FIVINZ_BASE_URL}${href}` : FIVINZ_BASE_URL;
+    const fullUrl = href?.startsWith("/") ? `${FIVINZ_BASE_URL}${href}` : href;
 
     const rightTextHtml = firstRow.find("div.news-link-right").text()?.trim();
 
