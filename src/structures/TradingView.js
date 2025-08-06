@@ -48,7 +48,7 @@ class TradingView {
     const openMarketStart = now
       .set("hour", 9)
       .set("minute", 30)
-      .set("second", 0);
+      .set("second", 30);
     const openMarketEnd = now.set("hour", 16).set("minute", 0).set("second", 0);
     const preMarketStart = now.set("hour", 4).set("minute", 1).set("second", 0);
     const preMarketEnd = now.set("hour", 9).set("minute", 30).set("second", 0);
@@ -190,22 +190,30 @@ class TradingView {
           finalSpacing = [`${spacing} `, `\u2006${spacing}`];
       }
 
-      const shortInterest = parseShortInterest(scrapedData.shortInterestData);
-      const factors = parseRawFactors(scrapedData, true);
+        const shortInterest = parseShortInterest(scrapedData.shortInterestData);
+        const factors = parseRawFactors(scrapedData, true);
+        const cap = parseDilutionCap(scrapedData)
+        const float  = parseDilutionFloat(scrapedData)
+        const inst = parseInstOwnData(scrapedData)
+        const news = await parseNews(scrapedData, symbol);
 
       for (const monitoredChange of t.types) {
         const channelId = configFile.alertsChannelIds[monitoredChange.type];
-
+        
         const header = `Stock pumped ${monitoredChange.targetChange}%`;
+        
+        if(monitoredChange.isVw){
+          const stuffToCheck = [shortInterest,factors , cap, inst]
 
-        const news = await parseNews(scrapedData, symbol);
+          const isRed = stuffToCheck.some(s => s.includes('🔴🔴')) 
+          if(isRed) continue
+
+        }
+
+
         const message = `# ${
           finalSpacing[0] + symbol + finalSpacing[1]
-        }\n\n${header}\n\n${parseDilutionCap(scrapedData)}${parseDilutionFloat(
-          scrapedData
-        )}${parseInstOwnData(
-          scrapedData
-        )}**SI**: ${shortInterest}${factors}${news}`;
+        }\n\n${header}\n\n${cap}${float}${inst}**SI**: ${shortInterest}${factors}${news}`;
 
         await this.client.sendTickerMessage(symbol, message, channelId);
       }
@@ -224,8 +232,8 @@ class TradingView {
     const monitoredChanges = [
       { targetChange: 15, shouldBeLessThan: 30, type: "normal" },
       { targetChange: 30, type: "normal" },
-      { targetChange: 40, type: "vw1" },
-      { targetChange: 100, type: "vw2", marketType: MARKET_TYPES.PRE_MARKET },
+      { targetChange: 40, type: "vw1" , isVw:true },
+      { targetChange: 100, type: "vw2", isVw:true , marketType: MARKET_TYPES.PRE_MARKET },
     ];
 
     for (const ticker of justFetchedTickers) {
