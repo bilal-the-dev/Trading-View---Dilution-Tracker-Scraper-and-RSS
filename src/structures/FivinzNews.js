@@ -7,9 +7,13 @@ class FivinzNews {
     const url = `${FIVINZ_BASE_URL}/quote.ashx?t=${ticker}`;
     const response = await fetch(url);
 
-    if (!response.ok) return "Some error occured";
-
     const data = await response.text();
+
+    if (!response.ok) {
+      console.error(response);
+      console.error(data);
+      return "Some error occured";
+    }
 
     const $ = cheerio.load(data);
 
