@@ -190,26 +190,24 @@ class TradingView {
           finalSpacing = [`${spacing} `, `\u2006${spacing}`];
       }
 
-        const shortInterest = parseShortInterest(scrapedData.shortInterestData);
-        const factors = parseRawFactors(scrapedData, true);
-        const cap = parseDilutionCap(scrapedData)
-        const float  = parseDilutionFloat(scrapedData)
-        const inst = parseInstOwnData(scrapedData)
-        const news = await parseNews(scrapedData, symbol);
+      const shortInterest = parseShortInterest(scrapedData.shortInterestData);
+      const factors = parseRawFactors(scrapedData, true);
+      const cap = parseDilutionCap(scrapedData);
+      const float = parseDilutionFloat(scrapedData);
+      const inst = parseInstOwnData(scrapedData);
+      const news = await parseNews(scrapedData, symbol);
 
       for (const monitoredChange of t.types) {
         const channelId = configFile.alertsChannelIds[monitoredChange.type];
-        
+
         const header = `Stock pumped ${monitoredChange.targetChange}%`;
-        
-        if(monitoredChange.isVw){
-          const stuffToCheck = [shortInterest,factors , cap, inst]
 
-          const isRed = stuffToCheck.some(s => s.includes('🔴🔴')) 
-          if(isRed) continue
+        if (monitoredChange.isVw) {
+          const stuffToCheck = [shortInterest, factors, cap, inst];
 
+          const isRed = stuffToCheck.some((s) => s.includes("🔴🔴"));
+          if (isRed) continue;
         }
-
 
         const message = `# ${
           finalSpacing[0] + symbol + finalSpacing[1]
@@ -232,8 +230,8 @@ class TradingView {
     const monitoredChanges = [
       { targetChange: 15, shouldBeLessThan: 30, type: "normal" },
       { targetChange: 30, type: "normal" },
-      { targetChange: 40, type: "vw1" , isVw:true },
-      { targetChange: 100, type: "vw2", isVw:true , marketType: MARKET_TYPES.PRE_MARKET },
+      { targetChange: 40, type: "vw1", isVw: true },
+      { targetChange: 100, type: "vw2", isVw: true },
     ];
 
     for (const ticker of justFetchedTickers) {
