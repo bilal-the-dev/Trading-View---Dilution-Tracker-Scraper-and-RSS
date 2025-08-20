@@ -35,6 +35,8 @@ exports.parseTickerData = async (data) => {
     dilutionData?.shortInterestData
   );
 
+  const { string: factors } = this.parseRawFactors(dilutionData);
+
   const news = await this.parseNews(dilutionData, ticker);
   const text = `# ${ticker}\n-# This Information might not be accurate, do your own diligence!\n\n${parsCompanyProfile(
     dilutionData
@@ -42,9 +44,7 @@ exports.parseTickerData = async (data) => {
     dilutionData
   )}${this.parseDilutionFloat(
     dilutionData
-  )}${subHeader} Short Interest ${subHeader}: ${shortInterest}\n${header} DILUTION\n${historicalText}\n${this.parseRawFactors(
-    dilutionData
-  )}${news}\n\n${ticker}`;
+  )}${subHeader} Short Interest ${subHeader}: ${shortInterest}\n${header} DILUTION\n${historicalText}\n${factors}${news}\n\n${ticker}`;
 
   return text;
 };
@@ -79,14 +79,14 @@ exports.parseNews = async (dilutionData, ticker) => {
   }`;
 };
 
-exports.parseCash = (dilutionData) => {
-  const cashPos = dilutionData?.cashPosText
-    ? `${subHeader} Cash Position ${subHeader}: ${this.parseCashPosText(
-        dilutionData.cashPosText
-      )}\n`
-    : "N/A\n";
-  return cashPos;
-};
+// exports.parseCash = (dilutionData) => {
+//   const cashPos = dilutionData?.cashPosText
+//     ? `${subHeader} Cash Position ${subHeader}: ${this.parseCashPosText(
+//         dilutionData.cashPosText
+//       )}\n`
+//     : "N/A\n";
+//   return cashPos;
+// };
 
 exports.parseRawFactors = (dilutionData, isScanner) => {
   const emojiMap = { Low: "🔴", High: "🟢", Medium: "🟠", "N/A": "N/A" }; // N/A for default
@@ -94,6 +94,7 @@ exports.parseRawFactors = (dilutionData, isScanner) => {
   const isDoubleRed = dilutionData?.rawFactorsContentArray?.every(
     (r) => r.removeInScanner || r.text === "Low" // it'll always be true for historical and risk rest two if they are low
   );
+
   let factors = dilutionData?.rawFactorsContentArray
     ? dilutionData.rawFactorsContentArray.reduce((acc, cur) => {
         if (isScanner && cur.removeInScanner) return acc; // in scanner, dont add risk, historical , in analyzer alwayys add all
@@ -105,16 +106,28 @@ exports.parseRawFactors = (dilutionData, isScanner) => {
       }, "")
     : "N/A\n";
 
-  factors += `> Cash Position: ${this.parseCashPosText(
-    dilutionData.cashPosText
-  )}\n`;
+  const {
+    string: cashText,
+    isPositive,
+    numberedMonths,
+  } = this.parseCashPosText(dilutionData.cashPosText);
+
+  factors += `> Cash Position: ${cashText}\n`;
   // const factors = dilutionData?.rawFactorsContentArray
   //   ? dilutionData.rawFactorsContentArray.reduce(
   //       (acc, cur) => `${acc}${cur.title}: ${cur.text}\n`,
   //       ""
   //     )
   //   : "N/A";
-  return `> ${subHeader} Dilution  ${subHeader}\n${factors}`;
+
+  const result = {
+    string: `> ${subHeader} Dilution  ${subHeader}\n${factors}`,
+    isDoubleRed,
+    isPositive,
+    numberedMonths,
+  };
+
+  return result;
 };
 
 exports.parseInstOwnData = (dilutionData) => {
@@ -138,23 +151,32 @@ exports.parseCashPosText = (cashPosText) => {
 
   const i = cashPosText?.indexOf("of");
   let cashData = "N/A";
+  let isPositive;
+  let numberedMonths;
 
   if (cashPosText?.includes("cash left")) {
     cashData = cashPosText?.slice(16, i).trim() || "N/A";
 
-    const numberedMonths = Number(cashData.split(" ")[0]);
+    numberedMonths = Number(cashData.split(" ")[0]);
 
     if (numberedMonths < 30) emoji = "🟢";
     if (numberedMonths >= 30) emoji = "🔴🔴";
   }
 
   if (cashPosText?.includes("cashflow positive")) {
+    isPositive = true;
     cashData = "Positive " + (cashPosText?.slice(i + 2).trim() || "N/A");
 
     emoji = "🔴🔴";
   }
 
-  return `${cashData} ${emoji ?? ""}`;
+  const result = {
+    string: `${cashData} ${emoji ?? ""}`,
+    isPositive,
+    numberedMonths,
+  };
+
+  return result;
 };
 
 exports.parseShortInterest = (shortInterestData) => {

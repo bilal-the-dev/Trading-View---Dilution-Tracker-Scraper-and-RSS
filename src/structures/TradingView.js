@@ -202,8 +202,23 @@ class TradingView {
 
         const header = `Stock pumped ${monitoredChange.targetChange}%`;
 
+        if (monitoredChange.type === "long") {
+          // check for stuff to validate
+
+          // float must be smaller than 1 mil
+          if (!scrapedData.float?.latestFloat) continue;
+
+          if (scrapedData.float.latestFloat > 1) continue;
+
+          // all factors must be double red
+          if (!factors.isDoubleRed) continue;
+
+          // cash pos months must be smaller than 6
+          if (factors.numberedMonths >= 6) continue;
+        }
+
         if (monitoredChange.isVw) {
-          const stuffToCheck = [shortInterest, factors, cap, inst];
+          const stuffToCheck = [shortInterest, factors.string, cap, inst];
 
           const isRed = stuffToCheck.some((s) => s.includes("🔴🔴"));
           if (isRed) continue;
@@ -211,12 +226,15 @@ class TradingView {
 
         const message = `# ${
           finalSpacing[0] + symbol + finalSpacing[1]
-        }\n\n${header}\n\n${cap}${float}${inst}**SI**: ${shortInterest}${factors}${news}`;
+        }\n\n${header}\n\n${cap}${float}${inst}**SI**: ${shortInterest}${
+          factors.string
+        }${news}`;
 
         await this.client.sendTickerMessage(symbol, message, channelId);
       }
 
       t.scrapedData = null; // well so dont occupy memory much
+      t.priceChange = t.d[marketType]; // in filter ticker func, needed
       this.#tickers.push(t);
     }
 
@@ -228,6 +246,7 @@ class TradingView {
   filterNewTickers(justFetchedTickers, marketType) {
     const newFilteredTickers = [];
     const monitoredChanges = [
+      { targetChange: 10, type: "long" },
       { targetChange: 15, shouldBeLessThan: 30, type: "normal" },
       { targetChange: 30, type: "normal" },
       { targetChange: 40, type: "vw1", isVw: true },
@@ -420,13 +439,13 @@ class TradingView {
     if (monitorChange.marketType && monitorChange.marketType !== marketType)
       return; // for vw2, only pre market
 
-    if (priceChange < targetChange) return; // check if ticker pumped 15,30/40/100
+    if (priceChange < targetChange) return; // check if ticker pumped 10,15,30/40/100
 
     if (shouldBeLessThan && priceChange >= shouldBeLessThan) return; // in case of 15, if change is 35 it wont proceed rather will go to next iteration (30)
 
     const tickerAlreadyFound = this.#tickers.find(
-      (t) => t.s === s && t.d[marketType] >= targetChange
-    ); // check if a ticker sent already with pump of 15,30/40/100
+      (t) => t.s === s && t.priceChange >= targetChange // earlier, it was t.d[marketType] because we were clearing cache every market change but now it posts once, so old ticker from 12 would have wrong map to 13
+    ); // check if a ticker sent already with pump of 10,15,30/40/100
 
     if (tickerAlreadyFound) return;
 
