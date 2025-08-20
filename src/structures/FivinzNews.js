@@ -33,7 +33,10 @@ class FivinzNews {
 
     let emoji = "";
 
-    if (title.toLowerCase().includes("placement")) emoji = "🟡 ";
+    const wordsToLookFor = ["placement", "fda", "nasa", "nvidia"];
+
+    if (wordsToLookFor.some((word) => title.toLowerCase().includes(word)))
+      emoji = "🟡 ";
 
     return `${emoji}[${title}](${fullUrl})\n-# ${timestamp} ${rightTextHtml}`;
   }
