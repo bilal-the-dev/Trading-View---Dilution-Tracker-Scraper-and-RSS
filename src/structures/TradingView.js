@@ -234,7 +234,6 @@ class TradingView {
       }
 
       t.scrapedData = null; // well so dont occupy memory much
-      t.priceChange = t.d[marketType]; // in filter ticker func, needed
       this.#tickers.push(t);
     }
 
@@ -258,6 +257,7 @@ class TradingView {
       console.log(ticker.d[marketType]);
 
       ticker.types = [];
+      ticker.priceChange = ticker.d[marketType]; // used in below loop and also when bot restarts, it caches them, so needed to present
 
       monitoredChanges.forEach((monitorChange) => {
         const pumpedTicker = this.returnTickerIfPumped(
