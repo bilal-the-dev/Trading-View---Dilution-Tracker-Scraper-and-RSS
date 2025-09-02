@@ -205,15 +205,17 @@ class TradingView {
         if (monitoredChange.type === "long") {
           // check for stuff to validate
 
-          // float must be smaller than 1 mil
+          // float must be smaller than 2 mil
           if (!scrapedData.float?.latestFloat) continue;
 
-          if (scrapedData.float.latestFloat > 1) continue;
+          if (scrapedData.float.latestFloat > 2) continue;
 
           // all factors must be double red
           if (!factors.isDoubleRed) continue;
 
           // cash pos months must be smaller than 6
+          if (factors.isPositive) continue;
+          if (Number.isNaN(factors.numberedMonths)) continue; // in case of undefined the below condition returns false causing to send
           if (factors.numberedMonths >= 6) continue;
         }
 

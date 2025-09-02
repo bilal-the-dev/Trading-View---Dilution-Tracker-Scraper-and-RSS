@@ -203,18 +203,17 @@ exports.parseShortInterest = (shortInterestData) => {
 exports.parseDilutionFloat = (dilutionData) => {
   let str = "N/A";
 
+  let emoji = "";
   if (dilutionData.float) {
-    // let emoji;
-
     const floatAmount = dilutionData.float.latestFloat;
 
-    // if (floatAmount < 1) emoji = "🔴";
+    if (floatAmount < 2) emoji = "🔵";
     // if (floatAmount <= 1.5) emoji = "🟡";
     // if (floatAmount > 1.5) emoji = "🟢";
 
     str = `${floatAmount + "M"}`;
   }
-  return `**Float**: ${str}\n`;
+  return `**Float**: ${str}${emoji}\n`;
 };
 
 exports.parseDilutionCap = (dilutionData) => {

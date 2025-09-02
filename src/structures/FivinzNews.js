@@ -38,8 +38,56 @@ class FivinzNews {
     if (wordsToLookFor.some((word) => title.toLowerCase().includes(word)))
       emoji = "🟡 ";
 
-    return `${emoji}[${title}](${fullUrl})\n-# ${timestamp} ${rightTextHtml}`;
+    let timeEmoji = "";
+
+    if (isToday(timestamp)) timeEmoji = "🔵 ";
+
+    return `${emoji}[${title}](${fullUrl})\n-# ${timeEmoji}${timestamp} ${rightTextHtml}`;
   }
+}
+
+const monthMap = {
+  Jan: 0,
+  Feb: 1,
+  Mar: 2,
+  Apr: 3,
+  May: 4,
+  Jun: 5,
+  Jul: 6,
+  Aug: 7,
+  Sep: 8,
+  Oct: 9,
+  Nov: 10,
+  Dec: 11,
+};
+
+function isToday(dateStr) {
+  // Get first part before space (could be "Jul-17-25" or just "04:01PM")
+  const firstPart = dateStr.split(" ")[0];
+  const parts = firstPart.split("-");
+
+  if (parts.length !== 3) {
+    // Not in expected format -> definitely not today
+    return false;
+  }
+
+  const [monthStr, dayStr, yearSuffix] = parts;
+
+  const year = 2000 + parseInt(yearSuffix, 10);
+  const month = monthMap[monthStr];
+  const dayNum = parseInt(dayStr, 10);
+
+  if (isNaN(year) || month === undefined || isNaN(dayNum)) {
+    return false;
+  }
+
+  const today = new Date();
+
+  return (
+    today.getUTCFullYear() === year &&
+    today.getUTCMonth() === month &&
+    today.getUTCDate() === dayNum
+  );
 }
 
 module.exports = FivinzNews;
