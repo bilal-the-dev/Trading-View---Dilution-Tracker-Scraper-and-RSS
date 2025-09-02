@@ -213,7 +213,7 @@ exports.parseDilutionFloat = (dilutionData) => {
 
     str = `${floatAmount + "M"}`;
   }
-  return `**Float**: ${str}${emoji}\n`;
+  return `**Float**: ${str} ${emoji}\n`;
 };
 
 exports.parseDilutionCap = (dilutionData) => {

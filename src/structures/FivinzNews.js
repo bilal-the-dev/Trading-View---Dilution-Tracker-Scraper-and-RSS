@@ -66,6 +66,7 @@ function isToday(dateStr) {
   const firstPart = dateStr.split(" ")[0];
   const parts = firstPart.split("-");
 
+  if (firstPart.toLowerCase() === "today") return true;
   if (parts.length !== 3) {
     // Not in expected format -> definitely not today
     return false;
