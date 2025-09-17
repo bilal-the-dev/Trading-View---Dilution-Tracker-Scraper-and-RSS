@@ -70,6 +70,11 @@ class TradingView {
 
     console.log(`Current time in EST: ${now.format()}`);
 
+    if ([6, 0].includes(now.day())) {
+      console.log("Today is Saturday, or Sunday.");
+      body = null;
+    }
+
     if (!body) return await setTimeout(this.config.afterMarketTimeout);
 
     const TV_DATA = await getTVSession();
