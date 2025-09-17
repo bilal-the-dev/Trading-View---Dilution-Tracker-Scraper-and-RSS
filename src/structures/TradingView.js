@@ -154,6 +154,7 @@ class TradingView {
             fetchShortInterest: true,
             fetchfloat: true,
             fetchMarketCap: true,
+            fetchCompanyProfile: true,
           }
         );
 
