@@ -12,6 +12,7 @@ const {
   parseDilutionFloat,
   parseDilutionCap,
   parseNews,
+  parsCompanyProfile,
 } = require("../utils/parse");
 const { getTVSession, setTVSession } = require("../database/queries");
 const { MARKET_TYPES } = require("../utils/constants");
@@ -190,6 +191,7 @@ class TradingView {
           finalSpacing = [`${spacing} `, `\u2006${spacing}`];
       }
 
+      const country = parsCompanyProfile(scrapedData, false);
       const shortInterest = parseShortInterest(scrapedData.shortInterestData);
       const factors = parseRawFactors(scrapedData, true);
       const cap = parseDilutionCap(scrapedData);
@@ -205,10 +207,10 @@ class TradingView {
         if (monitoredChange.type === "long") {
           // check for stuff to validate
 
-          // float must be smaller than 2 mil
-          if (!scrapedData.float?.latestFloat) continue;
+          // // float must be smaller than 2 mil
+          // if (!scrapedData.float?.latestFloat) continue;
 
-          if (scrapedData.float.latestFloat > 2) continue;
+          // if (scrapedData.float.latestFloat > 2) continue;
 
           // all factors must be double red
           if (!factors.isDoubleRed) continue;
@@ -216,7 +218,7 @@ class TradingView {
           // cash pos months must be smaller than 6
           if (factors.isPositive) continue;
           if (Number.isNaN(factors.numberedMonths)) continue; // in case of undefined the below condition returns false causing to send
-          if (factors.numberedMonths >= 6) continue;
+          if (factors.numberedMonths >= 6.5) continue;
         }
 
         if (monitoredChange.isVw) {
@@ -228,7 +230,7 @@ class TradingView {
 
         const message = `# ${
           finalSpacing[0] + symbol + finalSpacing[1]
-        }\n\n${header}\n\n${cap}${float}${inst}**SI**: ${shortInterest}${
+        }\n\n${header}\n\n${country}${cap}${float}${inst}**SI**: ${shortInterest}${
           factors.string
         }${news}`;
 

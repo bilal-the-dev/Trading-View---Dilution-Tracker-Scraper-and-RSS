@@ -38,7 +38,7 @@ exports.parseTickerData = async (data) => {
   const { string: factors } = this.parseRawFactors(dilutionData);
 
   const news = await this.parseNews(dilutionData, ticker);
-  const text = `# ${ticker}\n-# This Information might not be accurate, do your own diligence!\n\n${parsCompanyProfile(
+  const text = `# ${ticker}\n-# This Information might not be accurate, do your own diligence!\n\n${this.parsCompanyProfile(
     dilutionData
   )}${this.parseDilutionCap(dilutionData)}${this.parseInstOwnData(
     dilutionData
@@ -49,13 +49,15 @@ exports.parseTickerData = async (data) => {
   return text;
 };
 
-function parsCompanyProfile(dilutionData) {
-  const str = `**Country**: ${
-    dilutionData.companyProfile?.country || "N/A"
-  }\n**Exchange**: ${dilutionData.companyProfile?.exchange || "N/A"}\n`;
+exports.parsCompanyProfile = (dilutionData, addExchange = true) => {
+  const str = `**Country**: ${dilutionData.companyProfile?.country || "N/A"}\n${
+    addExchange
+      ? `**Exchange**: ${dilutionData.companyProfile?.exchange || "N/A"}\n`
+      : ""
+  }`;
 
   return str;
-}
+};
 
 exports.parseNews = async (dilutionData, ticker) => {
   const parsedNews =

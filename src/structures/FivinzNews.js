@@ -25,7 +25,10 @@ class FivinzNews {
 
     // Title & URL
     const link = firstRow.find("a.tab-link-news");
-    const title = link.text().trim();
+    const title = link
+      .text()
+      .trim()
+      .replace(/digital asset/gi, "🟡 $& 🟡");
     const href = link.attr("href");
     const fullUrl = href?.startsWith("/") ? `${FIVINZ_BASE_URL}${href}` : href;
 
