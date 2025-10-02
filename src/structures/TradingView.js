@@ -1,10 +1,7 @@
 const { setTimeout } = require("timers/promises");
 
 const cron = require("node-cron");
-
-const dayjs = require("dayjs");
-const utc = require("dayjs/plugin/utc");
-const timezone = require("dayjs/plugin/timezone");
+const dayjs = require("./../utils/dayjs");
 const {
   parseRawFactors,
   parseShortInterest,
@@ -18,9 +15,6 @@ const { getTVSession, setTVSession } = require("../database/queries");
 const { MARKET_TYPES } = require("../utils/constants");
 const configFile = require("./../../config.json");
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.tz.setDefault("Canada/Eastern");
 let retries = 0;
 
 const {
@@ -259,6 +253,8 @@ class TradingView {
       { targetChange: 15, shouldBeLessThan: 30, type: "normal" },
       { targetChange: 30, type: "normal" },
       { targetChange: 40, type: "vw1", isVw: true },
+      { targetChange: 15, shouldBeLessThan: 40, type: "vw-15-40", isVw: true },
+      { targetChange: 40, type: "vw-15-40", isVw: true },
       { targetChange: 100, type: "vw2", isVw: true },
     ];
 

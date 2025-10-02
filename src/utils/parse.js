@@ -1,4 +1,5 @@
 const FivinzNews = require("../structures/FivinzNews");
+const { isToday } = require("./date.js");
 
 const header = "###";
 const subHeader = "**";
@@ -69,8 +70,8 @@ exports.parseNews = async (dilutionData, ticker) => {
               `${
                 cur.title.toLowerCase().includes("placement") ? "🟡 " : ""
               }${acc}[${cur.title}](https://dilution.news/${cur.id})\n-# ${
-                cur.source?.name
-              } ${cur.publishedAtDateTimeString}`,
+                isToday(cur.publishedAtDateInEST) ? "🔵 " : ""
+              }${cur.source?.name} ${cur.publishedAtDateTimeString}`,
             ""
           )
       : "N/A";
