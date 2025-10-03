@@ -10,6 +10,7 @@ const {
   parseDilutionCap,
   parseNews,
   parsCompanyProfile,
+  convertVolumeToHR,
 } = require("../utils/parse");
 const { getTVSession, setTVSession } = require("../database/queries");
 const { MARKET_TYPES } = require("../utils/constants");
@@ -191,6 +192,7 @@ class TradingView {
           finalSpacing = [`${spacing} `, `\u2006${spacing}`];
       }
 
+      const volume = `**Volume**: ${convertVolumeToHR(t.d[marketType + 1])}\n`;
       const country = parsCompanyProfile(scrapedData, false);
       const shortInterest = parseShortInterest(scrapedData.shortInterestData);
       const factors = parseRawFactors(scrapedData, true);
@@ -230,7 +232,7 @@ class TradingView {
 
         const message = `# ${
           finalSpacing[0] + symbol + finalSpacing[1]
-        }\n\n${header}\n\n${country}${cap}${float}${inst}**SI**: ${shortInterest}${
+        }\n\n${header}\n\n${volume}${country}${cap}${float}${inst}**SI**: ${shortInterest}${
           factors.string
         }${news}`;
 

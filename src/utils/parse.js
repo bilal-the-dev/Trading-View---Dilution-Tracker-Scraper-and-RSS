@@ -50,6 +50,13 @@ exports.parseTickerData = async (data) => {
   return text;
 };
 
+// HR = human readble , its for TV
+exports.convertVolumeToHR = (volume) =>
+  new Intl.NumberFormat("en", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(volume);
+
 exports.parsCompanyProfile = (dilutionData, addExchange = true) => {
   const str = `**Country**: ${dilutionData.companyProfile?.country || "N/A"}\n${
     addExchange
