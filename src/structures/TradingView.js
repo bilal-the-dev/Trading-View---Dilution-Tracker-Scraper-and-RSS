@@ -241,11 +241,9 @@ class TradingView {
         const files = [];
 
         if (monitoredChange.screenshot) {
-          console.log(scrapedData.screenshot);
-
           files.push(
             new AttachmentBuilder()
-              .setFile(scrapedData.screenshot)
+              .setFile(Buffer.from(scrapedData.screenshot))
               .setName("screenshot.png")
               .setSpoiler(true)
           );
