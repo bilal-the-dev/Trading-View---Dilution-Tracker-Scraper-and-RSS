@@ -240,13 +240,16 @@ class TradingView {
 
         const files = [];
 
-        if (monitoredChange.screenshot)
+        if (monitoredChange.screenshot) {
+          console.log(scrapedData.screenshot);
+
           files.push(
             new AttachmentBuilder()
               .setFile(scrapedData.screenshot)
               .setName("screenshot.png")
               .setSpoiler(true)
           );
+        }
 
         await this.client.sendTickerMessage(
           symbol,
