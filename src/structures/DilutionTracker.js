@@ -426,6 +426,11 @@ class DilutionTracker {
   }
 
   async setOtherDefaults(page) {
+    await page.setViewport({
+      width: 1920,
+      height: 1080,
+    });
+
     await page.setUserAgent(USER_AGENT);
   }
 
