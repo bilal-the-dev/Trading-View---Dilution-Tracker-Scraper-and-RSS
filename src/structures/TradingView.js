@@ -245,6 +245,7 @@ class TradingView {
             new AttachmentBuilder()
               .setFile(scrapedData.screenshot)
               .setName("screenshot.png")
+              .setSpoiler(true)
           );
 
         await this.client.sendTickerMessage(
