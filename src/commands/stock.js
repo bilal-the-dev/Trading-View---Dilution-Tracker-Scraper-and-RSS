@@ -11,7 +11,7 @@ module.exports = {
         `Please use the command in <#${process.env.STOCK_ANALYZER_CHANNEL_ID}>`
       );
 
-    handleTickerAnalysisInteraction(interaction, ticker.toUpperCase(), false);
+    handleTickerAnalysisInteraction(interaction, ticker.toUpperCase(), true);
   },
   async autocomplete(_, __, interaction) {
     const option = interaction.options.getFocused(true);

@@ -4,6 +4,7 @@ const fs = require("fs");
 const { Client } = require("discord.js");
 const WOK = require("wokcommands");
 const { Events } = require("discord.js");
+const cron = require("node-cron");
 
 const { DilutionTracker } = require("../structures/DilutionTracker");
 const TickerFetcher = require("../structures/TickerFetcher");
@@ -63,6 +64,7 @@ class ExtendedClient extends Client {
       this.haltManager.start();
       this.tradingView.start(); // to send logs message thats why put in ready
       this.bans.start();
+      this.setCronForScamMessage();
       new WOK({
         client: readyClient,
         commandsDir: path.join(__dirname, "..", "commands"),
@@ -124,13 +126,15 @@ class ExtendedClient extends Client {
     });
   }
 
-  async sendTickerMessage(ticker, description, channelId) {
+  async sendTickerMessage(ticker, text, channelId, isPlainText, files) {
     const channel = this.channels.cache.get(channelId);
 
     const row = getButtonRow(ticker);
 
     const data = {
-      embeds: [generateEmbed({ description })],
+      ...(!isPlainText && { embeds: [generateEmbed({ description: text })] }),
+      ...(isPlainText && { content: text }),
+      ...(files && { files }),
       ...(row && { components: [row] }),
     };
 
@@ -141,6 +145,32 @@ class ExtendedClient extends Client {
     const channel = this.channels.cache.get(process.env.LOGS_CHANNEL_ID);
 
     await channel.send(data);
+  }
+
+  setCronForScamMessage() {
+    cron.schedule(
+      "0 9 * * 1,3,5",
+      async () => {
+        const text = `🚨 Heads up, @everyone 🚨
+Be on the lookout for imposters/scammers!! 😱 Some people may join our Discord and change their names to resemble Quads Trading or  Shawn - Smithtrading.com.  Once they do, they might try to send DM or friend requests to promote their services, sell something or even take your money 💵!! Please don't engage with these individuals or accept their friend requests from unknown people. Your safety is our #1 priority! If your unsure, feel free to reach out via <#1392457437117677629>. Thank you for understanding and stay safe out there!!
+
+✅ All payments are processed only through our official Whop shop.
+
+❌ We will never ask you to send crypto payments.
+
+❌ Do not engage with, or accept friend requests from, unknown users.`;
+
+        await this.sendTickerMessage(
+          null,
+          text,
+          process.env.SCAM_CHANNEL_ID,
+          true
+        ).catch(console.error);
+      },
+      {
+        timezone: "America/New_York",
+      }
+    );
   }
 }
 

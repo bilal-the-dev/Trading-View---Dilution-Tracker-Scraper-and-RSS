@@ -157,6 +157,7 @@ class DilutionTracker {
       fetchOsShares,
       fetchMarketCap,
       fetchCompanyProfile,
+      takeFullScreenshot,
     } = {
       fetchNews: true,
       fetchShortInterest: true,
@@ -253,6 +254,13 @@ class DilutionTracker {
       waitUntil: "networkidle0",
     });
 
+    let screenshot;
+
+    if (takeFullScreenshot)
+      screenshot = await page.screenshot({
+        fullPage: true,
+      });
+
     if (debug === "true") {
       await page.screenshot({ path: `ticker.png` });
     }
@@ -325,6 +333,7 @@ class DilutionTracker {
       marketCap,
       companyProfile,
       news,
+      screenshot,
     };
   }
 

@@ -15,6 +15,7 @@ const {
 const { getTVSession, setTVSession } = require("../database/queries");
 const { MARKET_TYPES } = require("../utils/constants");
 const configFile = require("./../../config.json");
+const { AttachmentBuilder } = require("discord.js");
 
 let retries = 0;
 
@@ -150,6 +151,7 @@ class TradingView {
             fetchfloat: true,
             fetchMarketCap: true,
             fetchCompanyProfile: true,
+            takeFullScreenshot: true,
           }
         );
 
@@ -236,7 +238,22 @@ class TradingView {
           factors.string
         }${news}`;
 
-        await this.client.sendTickerMessage(symbol, message, channelId);
+        const files = [];
+
+        if (monitoredChange.screenshot)
+          files.push(
+            new AttachmentBuilder()
+              .setFile(scrapedData.screenshot)
+              .setName("screenshot.png")
+          );
+
+        await this.client.sendTickerMessage(
+          symbol,
+          message,
+          channelId,
+          false,
+          files
+        );
       }
 
       t.scrapedData = null; // well so dont occupy memory much
@@ -254,9 +271,9 @@ class TradingView {
       { targetChange: 10, type: "long" },
       { targetChange: 15, shouldBeLessThan: 30, type: "normal" },
       { targetChange: 30, type: "normal" },
+      { targetChange: 30, type: "screenshot", screenshot: true },
       { targetChange: 40, type: "vw1", isVw: true },
-      { targetChange: 15, shouldBeLessThan: 40, type: "vw-15-40", isVw: true },
-      { targetChange: 40, type: "vw-15-40", isVw: true },
+      { targetChange: 15, type: "vw-15", isVw: true },
       { targetChange: 100, type: "vw2", isVw: true },
     ];
 
