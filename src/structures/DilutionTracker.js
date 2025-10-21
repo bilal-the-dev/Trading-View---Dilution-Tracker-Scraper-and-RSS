@@ -254,6 +254,33 @@ class DilutionTracker {
       waitUntil: "networkidle0",
     });
 
+    const fullPageHeight = await page.evaluate(() => {
+      let pageHeight = 0;
+
+      function findHighestNode(nodesList) {
+        for (let i = nodesList.length - 1; i >= 0; i--) {
+          if (nodesList[i].scrollHeight && nodesList[i].clientHeight) {
+            var elHeight = Math.max(
+              nodesList[i].scrollHeight,
+              nodesList[i].clientHeight
+            );
+            pageHeight = Math.max(elHeight, pageHeight);
+          }
+          if (nodesList[i].childNodes.length)
+            findHighestNode(nodesList[i].childNodes);
+        }
+      }
+
+      findHighestNode(document.documentElement.childNodes);
+
+      return pageHeight;
+    });
+
+    await page.setViewport({
+      width: 1920,
+      height: fullPageHeight,
+    });
+
     let screenshot;
 
     if (takeFullScreenshot)
@@ -399,11 +426,6 @@ class DilutionTracker {
   }
 
   async setOtherDefaults(page) {
-    await page.setViewport({
-      width: 1920,
-      height: 1080,
-    });
-
     await page.setUserAgent(USER_AGENT);
   }
 
