@@ -4,6 +4,7 @@ const cron = require("node-cron");
 const puppeteer = require("puppeteer-extra");
 const fs = require("fs/promises");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+const { AttachmentBuilder } = require("discord.js");
 puppeteer.use(StealthPlugin());
 
 const JS_FILE = "bundle.c98d4aee747973917d34.js";
@@ -254,39 +255,9 @@ class DilutionTracker {
       waitUntil: "networkidle0",
     });
 
-    const fullPageHeight = await page.evaluate(() => {
-      let pageHeight = 0;
+    let screenshots = [];
 
-      function findHighestNode(nodesList) {
-        for (let i = nodesList.length - 1; i >= 0; i--) {
-          if (nodesList[i].scrollHeight && nodesList[i].clientHeight) {
-            var elHeight = Math.max(
-              nodesList[i].scrollHeight,
-              nodesList[i].clientHeight
-            );
-            pageHeight = Math.max(elHeight, pageHeight);
-          }
-          if (nodesList[i].childNodes.length)
-            findHighestNode(nodesList[i].childNodes);
-        }
-      }
-
-      findHighestNode(document.documentElement.childNodes);
-
-      return pageHeight;
-    });
-
-    await page.setViewport({
-      width: 1920,
-      height: fullPageHeight,
-    });
-
-    let screenshot;
-
-    if (takeFullScreenshot)
-      screenshot = await page.screenshot({
-        fullPage: true,
-      });
+    if (takeFullScreenshot) screenshots = await this.takeScreenShots(page);
 
     if (debug === "true") {
       await page.screenshot({ path: `ticker.png` });
@@ -360,7 +331,7 @@ class DilutionTracker {
       marketCap,
       companyProfile,
       news,
-      screenshot,
+      screenshots,
     };
   }
 
@@ -372,6 +343,65 @@ class DilutionTracker {
     });
 
     this.login();
+  }
+
+  async takeScreenShots(page) {
+    const fullPageHeight = await page.evaluate(() => {
+      let pageHeight = 0;
+
+      function findHighestNode(nodesList) {
+        for (let i = nodesList.length - 1; i >= 0; i--) {
+          if (nodesList[i].scrollHeight && nodesList[i].clientHeight) {
+            var elHeight = Math.max(
+              nodesList[i].scrollHeight,
+              nodesList[i].clientHeight
+            );
+            pageHeight = Math.max(elHeight, pageHeight);
+          }
+          if (nodesList[i].childNodes.length)
+            findHighestNode(nodesList[i].childNodes);
+        }
+      }
+
+      findHighestNode(document.documentElement.childNodes);
+
+      return pageHeight;
+    });
+
+    const VIEWPORT_WIDTH = 1920;
+    const MAX_SCREENSHOT_HEIGHT = 2025;
+
+    await page.setViewport({
+      width: VIEWPORT_WIDTH,
+      height: fullPageHeight,
+    });
+
+    const totalScreens = Math.ceil(fullPageHeight / MAX_SCREENSHOT_HEIGHT);
+
+    const screenshots = [];
+
+    for (let i = 0; i < totalScreens; i++) {
+      const y = i * MAX_SCREENSHOT_HEIGHT;
+      const clipHeight = Math.min(MAX_SCREENSHOT_HEIGHT, fullPageHeight - y);
+
+      const screenshot = await page.screenshot({
+        clip: {
+          x: 0,
+          y,
+          width: 1920,
+          height: clipHeight,
+        },
+      });
+
+      const file = new AttachmentBuilder()
+        .setFile(Buffer.from(screenshot))
+        .setName(`screenshot_${i + 1}.png`)
+        .setSpoiler(true);
+
+      screenshots.push(file);
+    }
+
+    return screenshots;
   }
 
   async fetchFilesRepeatedly() {

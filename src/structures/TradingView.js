@@ -15,7 +15,6 @@ const {
 const { getTVSession, setTVSession } = require("../database/queries");
 const { MARKET_TYPES } = require("../utils/constants");
 const configFile = require("./../../config.json");
-const { AttachmentBuilder } = require("discord.js");
 
 let retries = 0;
 
@@ -204,7 +203,7 @@ class TradingView {
       const news = await parseNews(scrapedData, symbol);
 
       for (const monitoredChange of t.types) {
-        const channelId = configFile.alertsChannelIds[monitoredChange.type];
+        const channelIds = configFile.alertsChannelIds[monitoredChange.type];
 
         const header = `Stock pumped ${monitoredChange.targetChange}%`;
 
@@ -238,24 +237,14 @@ class TradingView {
           factors.string
         }${news}`;
 
-        const files = [];
-
-        if (monitoredChange.screenshot) {
-          files.push(
-            new AttachmentBuilder()
-              .setFile(Buffer.from(scrapedData.screenshot))
-              .setName("screenshot.png")
-              .setSpoiler(true)
+        for (const channelId of channelIds)
+          await this.client.sendTickerMessage(
+            symbol,
+            message,
+            channelId,
+            false,
+            monitoredChange.screenshots
           );
-        }
-
-        await this.client.sendTickerMessage(
-          symbol,
-          message,
-          channelId,
-          false,
-          files
-        );
       }
 
       t.scrapedData = null; // well so dont occupy memory much

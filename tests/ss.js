@@ -12,7 +12,7 @@ async function s() {
     waitUntil: "networkidle0",
   });
 
-  const h = await page.evaluate(() => {
+  const fullPageHeight = await page.evaluate(() => {
     let pageHeight = 0;
 
     function findHighestNode(nodesList) {
@@ -34,17 +34,37 @@ async function s() {
     return pageHeight;
   });
 
-  console.log(h);
+  console.log(fullPageHeight);
+
+  const VIEWPORT_WIDTH = 1920;
+  const MAX_SCREENSHOT_HEIGHT = 2025;
 
   await page.setViewport({
-    width: 1920,
-    height: h,
+    width: VIEWPORT_WIDTH,
+    height: fullPageHeight,
   });
 
-  await page.screenshot({
-    path: "fullpage_clip.png",
-    fullPage: true,
-  });
+  let screenshots = [];
+
+  const totalScreens = Math.ceil(fullPageHeight / MAX_SCREENSHOT_HEIGHT);
+
+  for (let i = 0; i < totalScreens; i++) {
+    const y = i * MAX_SCREENSHOT_HEIGHT;
+    const clipHeight = Math.min(MAX_SCREENSHOT_HEIGHT, fullPageHeight - y);
+
+    const screenshot = await page.screenshot({
+      path: `screenshot_part_${i + 1}.png`,
+
+      clip: {
+        x: 0,
+        y,
+        width: 1920,
+        height: clipHeight,
+      },
+    });
+
+    screenshots.push(screenshot);
+  }
 }
 
 s();
