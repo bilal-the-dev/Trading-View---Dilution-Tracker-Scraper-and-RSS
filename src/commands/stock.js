@@ -8,7 +8,7 @@ module.exports = {
 
     const channelIds = process.env.STOCK_ANALYZER_CHANNEL_IDS.split(",");
 
-    if (!channelIds.some((cId) => interaction.channel.id !== cId))
+    if (!channelIds.some((cId) => interaction.channel.id === cId))
       return await interaction.reply(
         `Please use the command in ${channelIds
           .map((cId) => `<#${cId}>`)
