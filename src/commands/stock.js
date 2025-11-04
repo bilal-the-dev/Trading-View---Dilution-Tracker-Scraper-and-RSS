@@ -6,9 +6,13 @@ module.exports = {
   async callback({ interaction }) {
     const ticker = interaction.options.getString("ticker");
 
-    if (interaction.channel.id !== process.env.STOCK_ANALYZER_CHANNEL_ID)
+    const channelIds = process.env.STOCK_ANALYZER_CHANNEL_IDS.split(",");
+
+    if (!channelIds.some((cId) => interaction.channel.id !== cId))
       return await interaction.reply(
-        `Please use the command in <#${process.env.STOCK_ANALYZER_CHANNEL_ID}>`
+        `Please use the command in ${channelIds
+          .map((cId) => `<#${cId}>`)
+          .join(" ")}`
       );
 
     handleTickerAnalysisInteraction(interaction, ticker.toUpperCase(), true);
