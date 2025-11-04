@@ -243,7 +243,7 @@ class TradingView {
             message,
             channelId,
             false,
-            monitoredChange.screenshots
+            scrapedData.screenshots
           );
       }
 
