@@ -160,8 +160,6 @@ class TradingView {
       })
     );
 
-    console.log("Scraped!");
-
     const enrichedTickers = scrapeResults
       .filter((r) => r.status === "fulfilled")
       .map((r) => r.value);
@@ -254,8 +252,6 @@ class TradingView {
       t.scrapedData = null; // well so dont occupy memory much
       this.#tickers.push(t);
     }
-
-    console.log(newTickers.length);
 
     await setTimeout(this.config.refreshTime);
   }
