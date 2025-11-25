@@ -134,7 +134,7 @@ class ExtendedClient extends Client {
     const data = {
       ...(!isPlainText && { embeds: [generateEmbed({ description: text })] }),
       ...(isPlainText && { content: text }),
-      ...(files && { files }),
+      ...(files && { files: files.slice(0, 10) }),
       ...(row && { components: [row] }),
     };
 
