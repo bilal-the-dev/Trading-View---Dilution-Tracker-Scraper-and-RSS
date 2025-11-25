@@ -140,6 +140,8 @@ class TradingView {
 
     const newTickers = this.filterNewTickers(data.data, marketType);
 
+    console.log("TV: Fetching for dolituon");
+
     const scrapeResults = await Promise.allSettled(
       newTickers.map(async (t) => {
         const scrapedData = await this.client.dilutionTracker.scrapeTickerInfo(
