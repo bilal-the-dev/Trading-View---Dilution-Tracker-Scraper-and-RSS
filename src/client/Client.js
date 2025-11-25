@@ -24,7 +24,7 @@ class ExtendedClient extends Client {
 
     // Initiating Managers
     this.dilutionTracker = new DilutionTracker({
-      headless: process.env.debug == "true" ? false : true,
+      // headless: process.env.debug == "true" ? false : true,
       // devtools: true,
       ...(process.platform === "linux" && {
         executablePath: this.getChromiumPath(),
