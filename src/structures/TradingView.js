@@ -140,7 +140,7 @@ class TradingView {
 
     const newTickers = this.filterNewTickers(data.data, marketType);
 
-    console.log("TV: Fetching for dolituon");
+    console.log(`TV: Fetching for dilution ${newTickers.length}`);
 
     const scrapeResults = await Promise.allSettled(
       newTickers.map(async (t) => {
@@ -159,6 +159,8 @@ class TradingView {
         return { ...t, scrapedData };
       })
     );
+
+    console.log("Scraped!");
 
     const enrichedTickers = scrapeResults
       .filter((r) => r.status === "fulfilled")

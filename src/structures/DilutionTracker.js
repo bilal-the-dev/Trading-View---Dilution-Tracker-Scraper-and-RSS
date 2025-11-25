@@ -170,6 +170,8 @@ class DilutionTracker {
     if (!this.isLoggedIn)
       throw new Error("Have not logged in into dilution yet");
 
+    console.log(`Scraping in dilution ${ticker}`);
+
     const page = await this.browser.newPage();
 
     let shortInterestData,
@@ -427,6 +429,7 @@ class DilutionTracker {
 
     await fs.writeFile("./dilution.js", jsText);
     await fs.writeFile("./dilution.css", cssText);
+    console.log("Wrote the js and css");
   }
 
   async requestAPIForTickers() {
