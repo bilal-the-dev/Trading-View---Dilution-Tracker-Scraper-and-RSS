@@ -58,7 +58,10 @@ exports.convertVolumeToHR = (volume) =>
   }).format(volume);
 
 exports.parsCompanyProfile = (dilutionData, addExchange = true) => {
-  const str = `**Country**: ${dilutionData.companyProfile?.country || "N/A"}\n${
+  const countryStr = dilutionData.companyProfile?.country;
+  const str = `**Country**: ${countryStr || "N/A"}${
+    countryStr && countryStr !== "U.S" ? " 🟡" : ""
+  }\n${
     addExchange
       ? `**Exchange**: ${dilutionData.companyProfile?.exchange || "N/A"}\n`
       : ""
