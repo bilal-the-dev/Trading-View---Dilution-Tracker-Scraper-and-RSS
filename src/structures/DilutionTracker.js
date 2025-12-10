@@ -259,7 +259,11 @@ class DilutionTracker {
 
     let screenshots = [];
 
+    console.log(`Taking screenshots for ${ticker}`);
+
     if (takeFullScreenshot) screenshots = await this.takeScreenShots(page);
+
+    console.log(`Took screenshots for ${ticker}`);
 
     if (debug === "true") {
       await page.screenshot({ path: `ticker.png` });
