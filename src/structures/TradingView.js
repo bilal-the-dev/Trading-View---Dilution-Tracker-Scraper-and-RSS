@@ -152,7 +152,7 @@ class TradingView {
             fetchfloat: true,
             fetchMarketCap: true,
             fetchCompanyProfile: true,
-            takeFullScreenshot: true,
+            // takeFullScreenshot: true,
           }
         );
 
@@ -262,7 +262,7 @@ class TradingView {
       { targetChange: 10, type: "long" },
       { targetChange: 15, shouldBeLessThan: 30, type: "normal" },
       { targetChange: 30, type: "normal" },
-      { targetChange: 30, type: "screenshot", screenshot: true },
+      // { targetChange: 30, type: "screenshot", screenshot: true },
       { targetChange: 40, type: "vw1", isVw: true },
       { targetChange: 15, type: "vw-15", isVw: true },
       { targetChange: 100, type: "vw2", isVw: true },
