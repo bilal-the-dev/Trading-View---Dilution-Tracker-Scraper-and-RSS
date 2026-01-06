@@ -263,6 +263,8 @@ class TradingView {
       { targetChange: 15, shouldBeLessThan: 30, type: "normal" },
       { targetChange: 30, type: "normal" },
       { targetChange: 40, type: "new-40" },
+      { targetChange: 100, type: "new-100" },
+      { targetChange: 200, type: "new-200" },
       { targetChange: 40, type: "vw1", isVw: true },
       { targetChange: 15, type: "vw-15", isVw: true },
       { targetChange: 100, type: "vw2", isVw: true },
