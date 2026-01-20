@@ -7,7 +7,7 @@ const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const { AttachmentBuilder } = require("discord.js");
 puppeteer.use(StealthPlugin());
 
-const JS_FILE = "bundle.862140c685aefbd7e2d9.js";
+const JS_FILE = "bundle.ad81ffd7db50316eaadd.js";
 const CSS_FILE = "css.main.99943a6280f5c20dc93c.css";
 
 const {
@@ -40,7 +40,7 @@ class DilutionTracker {
   async login() {
     if (SHOULD_OPEN_PUPPETEER === "false")
       return console.log(
-        "Did not open browser for dilution due to config in .env"
+        "Did not open browser for dilution due to config in .env",
       );
 
     if (this.browser?.isConnected()) await this.browser.close();
@@ -54,10 +54,10 @@ class DilutionTracker {
     browser.on("disconnected", () => {
       const disconnectTime = new Date();
       console.log(
-        `🔴 Browser disconnected at: ${disconnectTime.toISOString()}`
+        `🔴 Browser disconnected at: ${disconnectTime.toISOString()}`,
       );
       console.log(
-        `🕒 Uptime: ${(disconnectTime.getTime() - startTime.getTime()) / 1000}s`
+        `🕒 Uptime: ${(disconnectTime.getTime() - startTime.getTime()) / 1000}s`,
       );
     });
 
@@ -165,7 +165,7 @@ class DilutionTracker {
       fetchfloat: true,
       fetchMarketCap: true,
       fetchCompanyProfile: true,
-    }
+    },
   ) {
     if (!this.isLoggedIn)
       throw new Error("Have not logged in into dilution yet");
@@ -285,10 +285,10 @@ class DilutionTracker {
       });
 
       const historicalText = document.querySelector(
-        "#results-os-chart > p + p"
+        "#results-os-chart > p + p",
       )?.innerText;
       const cashPosText = document.querySelector(
-        "#results-os-chart + p + p"
+        "#results-os-chart + p + p",
       )?.innerText;
 
       const newsButton = document.querySelector("#result-tab-news");
@@ -314,7 +314,7 @@ class DilutionTracker {
         (response) =>
           response.url() ===
             `${DULTUION_TRACKER_API_URL}/getOhlcvTimeSeriesWithNews?ticker=${ticker}` &&
-          response.status() === 200
+          response.status() === 200,
       );
 
       news = await newsRes.json().catch(console.error);
@@ -360,7 +360,7 @@ class DilutionTracker {
           if (nodesList[i].scrollHeight && nodesList[i].clientHeight) {
             var elHeight = Math.max(
               nodesList[i].scrollHeight,
-              nodesList[i].clientHeight
+              nodesList[i].clientHeight,
             );
             pageHeight = Math.max(elHeight, pageHeight);
           }
@@ -413,12 +413,12 @@ class DilutionTracker {
   async fetchFilesRepeatedly() {
     const jsRes = await fetch(
       `${DILUTION_TRACKER_URL}/${JS_FILE}`,
-      this.getHeaders("javascript")
+      this.getHeaders("javascript"),
     );
 
     const cssRes = await fetch(
       `${DILUTION_TRACKER_URL}/${CSS_FILE}`,
-      this.getHeaders("css")
+      this.getHeaders("css"),
     );
 
     if (!jsRes.ok || !cssRes.ok) {
@@ -446,7 +446,7 @@ class DilutionTracker {
 
   async requestAPIForTickerNews(ticker) {
     const res = await fetch(
-      `${DULTUION_TRACKER_API_URL}/getOhlcvTimeSeriesWithNews?ticker=${ticker}`
+      `${DULTUION_TRACKER_API_URL}/getOhlcvTimeSeriesWithNews?ticker=${ticker}`,
     );
 
     if (!res.ok) {
@@ -455,7 +455,7 @@ class DilutionTracker {
       console.log(await res.json());
 
       throw new Error(
-        `Something went wrong while fetching ticker (${ticker}) news`
+        `Something went wrong while fetching ticker (${ticker}) news`,
       );
     }
 
