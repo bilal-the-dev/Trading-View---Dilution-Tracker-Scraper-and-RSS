@@ -7,7 +7,7 @@ const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const { AttachmentBuilder } = require("discord.js");
 puppeteer.use(StealthPlugin());
 
-const JS_FILE = "bundle.ad81ffd7db50316eaadd.js";
+const JS_FILE = "bundle.e538ade31aec99bdf7de.js";
 const CSS_FILE = "css.main.99943a6280f5c20dc93c.css";
 
 const {
