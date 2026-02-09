@@ -85,7 +85,7 @@ class TradingView {
         body,
         method: "POST",
         cookie: `cookiePrivacyPreferenceBannerProduction=notApplicable; cookiesSettings={"analytics":true,"advertising":true};${cookie}`,
-      })
+      }),
     );
 
     const data = await this.parseResponse(res);
@@ -115,7 +115,7 @@ class TradingView {
         console.log(this.#tickers);
 
         return console.log(
-          "Seems like bot was restarted,market was open so not sending tickers on startup"
+          "Seems like bot was restarted,market was open so not sending tickers on startup",
         );
       }
 
@@ -125,7 +125,7 @@ class TradingView {
 
       // for 4 am market, dont return rather send all tickers
       console.log(
-        "New Market tickers! Sending all! (some in case of open market"
+        "New Market tickers! Sending all! (some in case of open market",
       );
       // } else {
       //   console.log("Trading View: adding to cache OR new market");
@@ -153,12 +153,14 @@ class TradingView {
             fetchMarketCap: true,
             fetchCompanyProfile: true,
             // takeFullScreenshot: true,
-          }
+          },
         );
 
         return { ...t, scrapedData };
-      })
+      }),
     );
+
+    console.log(`TV: Fetched for dilution ${newTickers.length}`);
 
     const enrichedTickers = scrapeResults
       .filter((r) => r.status === "fulfilled")
@@ -245,13 +247,15 @@ class TradingView {
             message,
             channelId,
             false,
-            monitoredChange.screenshot ? scrapedData.screenshots : []
+            monitoredChange.screenshot ? scrapedData.screenshots : [],
           );
       }
 
       t.scrapedData = null; // well so dont occupy memory much
       this.#tickers.push(t);
     }
+
+    console.log(`Waiting ${this.config.refreshTime} before checking next`);
 
     await setTimeout(this.config.refreshTime);
   }
@@ -281,7 +285,7 @@ class TradingView {
         const pumpedTicker = this.returnTickerIfPumped(
           ticker,
           marketType,
-          monitorChange
+          monitorChange,
         );
 
         if (!pumpedTicker) return;
@@ -339,7 +343,7 @@ class TradingView {
           "pricing/?source=header_go_pro_button&feature=start_free_trial",
         mode: "same-origin",
         body: `------WebKitFormBoundarydW3ebpGipqyIwBKz\r\nContent-Disposition: form-data; name="username"\r\n\r\n${TV_EMAIL}\r\n------WebKitFormBoundarydW3ebpGipqyIwBKz\r\nContent-Disposition: form-data; name="password"\r\n\r\n${TV_PASSWORD}\r\n------WebKitFormBoundarydW3ebpGipqyIwBKz\r\nContent-Disposition: form-data; name="remember"\r\n\r\ntrue\r\n------WebKitFormBoundarydW3ebpGipqyIwBKz--\r\n`,
-      })
+      }),
     );
 
     const data = await this.parseResponse(res);
@@ -357,7 +361,7 @@ class TradingView {
     const sessionId = this.parseCookie(unparsedCookie, "sessionid=");
     const sessionid_signin = this.parseCookie(
       unparsedCookie,
-      "sessionid_sign="
+      "sessionid_sign=",
     );
 
     this.#username = data.user?.username;
@@ -383,7 +387,7 @@ class TradingView {
           cookie: `cookiePrivacyPreferenceBannerProduction=notApplicable; cookiesSettings={"analytics":true,"advertising":true};${cookie}`,
           referrer: ``,
           mode: "cors",
-        })
+        }),
       );
 
       const data = await this.parseResponse(res);
@@ -398,7 +402,7 @@ class TradingView {
       await this.client.sendTickerMessage(
         null, // no ticker
         `Cookie Expired - Login Attempt #${retries + 1} (Max Retries = 2)`,
-        process.env.LOGS_CHANNEL_ID
+        process.env.LOGS_CHANNEL_ID,
       );
       // handle the login code here
 
@@ -417,7 +421,7 @@ class TradingView {
       await this.client.sendTickerMessage(
         null, // no ticker
         text,
-        process.env.LOGS_CHANNEL_ID
+        process.env.LOGS_CHANNEL_ID,
       );
 
       if (retries < 2 && !result) {
@@ -462,7 +466,7 @@ class TradingView {
     if (shouldBeLessThan && priceChange >= shouldBeLessThan) return; // in case of 15, if change is 35 it wont proceed rather will go to next iteration (30)
 
     const tickerAlreadyFound = this.#tickers.find(
-      (t) => t.s === s && t.priceChange >= targetChange // earlier, it was t.d[marketType] because we were clearing cache every market change but now it posts once, so old ticker from 12 would have wrong map to 13
+      (t) => t.s === s && t.priceChange >= targetChange, // earlier, it was t.d[marketType] because we were clearing cache every market change but now it posts once, so old ticker from 12 would have wrong map to 13
     ); // check if a ticker sent already with pump of 10,15,30/40/100
 
     if (tickerAlreadyFound) return;

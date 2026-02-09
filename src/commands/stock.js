@@ -12,8 +12,10 @@ module.exports = {
       return await interaction.reply(
         `Please use the command in ${channelIds
           .map((cId) => `<#${cId}>`)
-          .join(" ")}`
+          .join(" ")}`,
       );
+
+    console.log(`Ran cmd for ${ticker}`);
 
     handleTickerAnalysisInteraction(interaction, ticker.toUpperCase(), true);
   },
@@ -23,7 +25,7 @@ module.exports = {
     return interaction.client.tickerFecther
       .getTickersCache()
       .filter((t) =>
-        t.symbol.toLowerCase().startsWith(option.value.toLowerCase())
+        t.symbol.toLowerCase().startsWith(option.value.toLowerCase()),
       )
       .map((t) => t.symbol);
   },
