@@ -263,7 +263,7 @@ class TradingView {
   filterNewTickers(justFetchedTickers, marketType) {
     const newFilteredTickers = [];
     const monitoredChanges = [
-      { targetChange: 0, type: "long" },
+      { targetChange: 10, type: "long" },
       { targetChange: 15, shouldBeLessThan: 30, type: "normal" },
       { targetChange: 30, type: "normal" },
       { targetChange: 40, type: "new-40" },
