@@ -220,12 +220,12 @@ class TradingView {
           // if (scrapedData.float.latestFloat > 2) continue;
 
           // all factors must be double red
-          if (!factors.isDoubleRed) continue;
+          if (factors.isDoubleRed) continue;
 
-          // cash pos months must be smaller than 6
+          // if (Number.isNaN(factors.numberedMonths)) continue; // in case of undefined the below condition returns false causing to send
+          // // cash pos months must be smaller than 6
           if (factors.isPositive) continue;
-          if (Number.isNaN(factors.numberedMonths)) continue; // in case of undefined the below condition returns false causing to send
-          if (factors.numberedMonths >= 6.5) continue;
+          // if (factors.numberedMonths <= 30) continue;
         }
 
         if (monitoredChange.isVw) {
@@ -263,7 +263,7 @@ class TradingView {
   filterNewTickers(justFetchedTickers, marketType) {
     const newFilteredTickers = [];
     const monitoredChanges = [
-      { targetChange: 10, type: "long" },
+      { targetChange: 0, type: "long" },
       { targetChange: 15, shouldBeLessThan: 30, type: "normal" },
       { targetChange: 30, type: "normal" },
       { targetChange: 40, type: "new-40" },
