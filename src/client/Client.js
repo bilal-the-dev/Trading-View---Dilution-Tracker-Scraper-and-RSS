@@ -57,7 +57,7 @@ class ExtendedClient extends Client {
   #registerReady() {
     this.on(Events.ClientReady, (readyClient) => {
       console.log(
-        `${readyClient.user.username} (${readyClient.user.id}) is ready!`
+        `${readyClient.user.username} (${readyClient.user.id}) is ready!`,
       );
 
       // Inititating managers that need to run when client is ready
@@ -105,7 +105,7 @@ class ExtendedClient extends Client {
     } = {
       withYahoo: true,
       withDilution: true,
-    }
+    },
   ) {
     let dilutionData;
     // yahooData;
@@ -149,7 +149,7 @@ class ExtendedClient extends Client {
 
   setCronForScamMessage() {
     cron.schedule(
-      "0 9 * * 1,3,5",
+      "0 9 * * 1",
       async () => {
         const text = `🚨 Heads up, @everyone 🚨
 Be on the lookout for imposters/scammers!! 😱 Some people may join our Discord and change their names to resemble Quads Trading or  Shawn - Smithtrading.com.  Once they do, they might try to send DM or friend requests to promote their services, sell something or even take your money 💵!! Please don't engage with these individuals or accept their friend requests from unknown people. Your safety is our #1 priority! If your unsure, feel free to reach out via <#1392457437117677629>. Thank you for understanding and stay safe out there!!
@@ -164,12 +164,12 @@ Be on the lookout for imposters/scammers!! 😱 Some people may join our Discord
           null,
           text,
           process.env.SCAM_CHANNEL_ID,
-          true
+          true,
         ).catch(console.error);
       },
       {
         timezone: "America/New_York",
-      }
+      },
     );
   }
 }
