@@ -279,7 +279,7 @@ class TradingView {
       console.log(ticker.d[marketType]);
 
       ticker.types = [];
-      ticker.priceChange = ticker.d[marketType -  3]; // used in below loop and also when bot restarts, it caches them, so needed to present
+      ticker.priceChange = ticker.d[marketType]; // used in below loop and also when bot restarts, it caches them, so needed to present
 
       monitoredChanges.forEach((monitorChange) => {
         const pumpedTicker = this.returnTickerIfPumped(
@@ -455,7 +455,7 @@ class TradingView {
 
   returnTickerIfPumped(ticker, marketType, monitorChange) {
     const { s, d } = ticker; // s contains name
-    const priceChange = d[marketType - 3];
+    const priceChange = d[marketType];
     const { targetChange, shouldBeLessThan } = monitorChange;
 
     if (monitorChange.marketType && monitorChange.marketType !== marketType)
