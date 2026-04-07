@@ -145,7 +145,7 @@ class TradingView {
     const scrapeResults = await Promise.allSettled(
       newTickers.map(async (t) => {
         const scrapedData = await this.client.dilutionTracker.scrapeTickerInfo(
-          t.d[0],
+          t.d[0].name,
           {
             fetchNews: true,
             fetchShortInterest: true,
@@ -171,7 +171,7 @@ class TradingView {
       .forEach((r) => console.error(r));
 
     for (const t of enrichedTickers) {
-      const symbol = t.d[0];
+      const symbol = t.d[0].name;
       const { scrapedData } = t;
 
       let spacing, finalSpacing;
@@ -279,7 +279,7 @@ class TradingView {
       console.log(ticker.d[marketType]);
 
       ticker.types = [];
-      ticker.priceChange = ticker.d[marketType]; // used in below loop and also when bot restarts, it caches them, so needed to present
+      ticker.priceChange = ticker.d[marketType -  3]; // used in below loop and also when bot restarts, it caches them, so needed to present
 
       monitoredChanges.forEach((monitorChange) => {
         const pumpedTicker = this.returnTickerIfPumped(
@@ -455,7 +455,7 @@ class TradingView {
 
   returnTickerIfPumped(ticker, marketType, monitorChange) {
     const { s, d } = ticker; // s contains name
-    const priceChange = d[marketType];
+    const priceChange = d[marketType - 3];
     const { targetChange, shouldBeLessThan } = monitorChange;
 
     if (monitorChange.marketType && monitorChange.marketType !== marketType)
