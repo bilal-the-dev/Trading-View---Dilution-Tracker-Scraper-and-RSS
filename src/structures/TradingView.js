@@ -199,6 +199,8 @@ class TradingView {
 
       const volume = `**Volume**: ${convertVolumeToHR(t.d[marketType + 1])}\n`;
       const country = parsCompanyProfile(scrapedData, false);
+      const description = scrapedData.companyProfile?.description
+      const keywords = description?.includes('cannabis') ? 'Cannabis':'N/A'
       const shortInterest = parseShortInterest(scrapedData.shortInterestData);
       const factors = parseRawFactors(scrapedData, true);
       const cap = parseDilutionCap(scrapedData);
@@ -237,7 +239,7 @@ class TradingView {
 
         const message = `# ${
           finalSpacing[0] + symbol + finalSpacing[1]
-        }\n\n${header}\n\n${volume}${country}${cap}${float}${inst}**SI**: ${shortInterest}${
+        }\n\n${header}\n\n${volume}${country}**Keywords**:${keywords}\n${cap}${float}${inst}**SI**: ${shortInterest}${
           factors.string
         }${news}`;
 
