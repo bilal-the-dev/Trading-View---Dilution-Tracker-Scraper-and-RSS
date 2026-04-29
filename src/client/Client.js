@@ -55,7 +55,7 @@ class ExtendedClient extends Client {
   }
 
   #registerReady() {
-    this.on(Events.ClientReady, (readyClient) => {
+    this.once(Events.ClientReady, (readyClient) => {
       console.log(
         `${readyClient.user.username} (${readyClient.user.id}) is ready!`,
       );
